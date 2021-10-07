@@ -19,10 +19,9 @@
                     @if(playfield.getGrid.card(row, col).getID._1 == -1) {
                       <input type="image" src="@routes.Assets.versioned("images/media/Empty.png")">
                     } else {
-                      <input type="image" src="@{routes.Assets.versioned("images/media/" + List("D", "E", "G", "H", "I", "J", "K", "L", "N", "O", "R", "T", "U", "V", "C", "W")(playfield.getGrid.card(row, col).getID._1))}.png">
+                      <input type="image" src="@{routes.Assets.versioned("images/media/" + List("D", "E", "G", "H", "I", "J", "K", "L", "N", "O", "R", "T", "U", "V", "C", "W")(playfield.getGrid.card(row, col).getID._1))}.png" style="transform:rotate(@{List(0,90,180,270)(playfield.getGrid.card(row, col).getID._2)}deg);">
                     }
                   </form>
-                  <!-- <img src="@routes.Assets.versioned("images/media/Empty.png")" onclick=""> -->
                 </td>
               }
             </tr>
@@ -39,9 +38,16 @@
             </ul>
           </div>
           <div>
-            <img src="@{routes.Assets.versioned("images/media/" + List("D", "E", "G", "H", "I", "J", "K", "L", "N", "O", "R", "T", "U", "V", "C", "W")(playfield.getCurrentFreshCard.getCard.getID._1))}.png">
+            <img src="@{routes.Assets.versioned("images/media/" + List("D", "E", "G", "H", "I", "J", "K", "L", "N", "O", "R", "T", "U", "V", "C", "W")(playfield.getCurrentFreshCard.getCard.getID._1))}.png" style="transform:rotate(@{List(0,90,180,270)(playfield.getCurrentFreshCard.getCard.getID._2)}deg);">
           </div>
           <div>
+            <form action="/rotate">
+              <input type="submit" name="dir" id="dir" value="Left">
+              <input type="submit" name="dir" id="dir" value="Right">
+            </form>
+          </div>
+          <div>
+            <br>
             <form action="/newGame">
               <input type="submit" value="New Game">
             </form>

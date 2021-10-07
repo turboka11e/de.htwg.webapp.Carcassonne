@@ -63,4 +63,14 @@ class HomeController @Inject()(val controllerComponents: ControllerComponents) e
     Ok(views.html.Application.gameBoard(controller.getPlayfield))
   }
 
+  def rotate(dir: String) = Action {
+    if (dir.equals("Left")) {
+      controller.rotateLeft
+    }
+    if (dir.equals("Right")) {
+      controller.rotateRight
+    }
+    Ok(views.html.Application.gameBoard(controller.getPlayfield))
+  }
+
 }
