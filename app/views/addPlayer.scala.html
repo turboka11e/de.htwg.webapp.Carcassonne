@@ -1,17 +1,19 @@
 @()
 
 @main("Add Players") {
-  <h1>Add a Player</h1>
-
-  <form action="/addPlayer">
-    <label for="player">Name:</label>
-    <input type="text" id="player" name="player">
-    <br><br>
-    <input type="submit" value="Submit">
-  </form>
-
-  <form action="/startGame">
-    <input type="submit" value="Start Game">
-  </form>
+  <center>
+    <h1>Add a Player</h1>
+  
+    <form action="/addPlayer">
+      <label for="player">Name:</label>
+      <input type="text" id="player" name="player">
+      <br><br>
+      <input type="submit" value="Submit">
+    </form>
+  
+    <form action="/startGame">
+      <input type="submit" value="Start Game">
+    </form>
+  </center>
 
 }

@@ -1,20 +1,38 @@
 @(playfield: de.htwg.se.Carcassonne.model.playfieldComponent.PlayfieldInterface)
 
 @main("Carcassonne") {
-  <h1>GameBoard</h1>
-  <b>@playfield.getGrid.getSize</b>
-  <br></br>
-  
+  <center>
+    <h1>Carcassonne</h1>
+  </center>
+    <div style="width: 60%; margin: 0px auto;">
+      <div class="row">
+        <div class="column" style="float: left;">
+          <table>
+            @for(row <- 0 until playfield.getGrid.getSize) {
+            <tr>
+              @for(col <- 0 until playfield.getGrid.getSize) {
+                <td>
+                  <form action="/test">
+                    <input type="hidden" name="row" id="row" value="@row">
+                    <input type="hidden" name="col" id="col" value="@col">
+                    <input type="image" src="@routes.Assets.versioned("images/media/Empty.png")">
+                  </form>
+                  <!-- <img src="@routes.Assets.versioned("images/media/Empty.png")" onclick=""> -->
+                </td>
+              }
+            </tr>
+            }
+          </table>
+        </div>
+        <div class="column" style="float: right;">
+          <h2>Spielerinfos</h2>
+          <ul>
+            @for(player <- playfield.getPlayers) {
+              <li>@player</li>
+            }
+          </ul>
+        </div>
+      </div>
+    </div>
 
-  <table>
-      @for(row <- 0 until playfield.getGrid.getSize) {
-      <tr>
-        @for(col <- 0 until playfield.getGrid.getSize) {
-          <td>
-            <img src="@routes.Assets.versioned("images/media/Empty.png")">
-          </td>
-        }
-      </tr>
-      }
-  </table>
 }
