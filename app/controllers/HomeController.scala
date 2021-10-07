@@ -58,4 +58,9 @@ class HomeController @Inject()(val controllerComponents: ControllerComponents) e
     Ok(views.html.Application.gameBoard(controller.getPlayfield))
   }
 
+  def placeCard(row: Int, col: Int, x: Int, y: Int) = Action {
+    controller.placeCard(row, col)
+    Ok(views.html.Application.gameBoard(controller.getPlayfield))
+  }
+
 }

@@ -1,21 +1,26 @@
 @(playfield: de.htwg.se.Carcassonne.model.playfieldComponent.PlayfieldInterface)
 
 @main("Carcassonne") {
+
   <center>
     <h1>Carcassonne</h1>
   </center>
-    <div style="width: 60%; margin: 0px auto;">
+    <div style="width: 50%; margin: 0px auto;">
       <div class="row">
         <div class="column" style="float: left;">
           <table>
-            @for(row <- 0 until playfield.getGrid.getSize) {
+            @for(col <- 0 until playfield.getGrid.getSize) {
             <tr>
-              @for(col <- 0 until playfield.getGrid.getSize) {
+              @for(row <- 0 until playfield.getGrid.getSize) {
                 <td>
-                  <form action="/test">
+                  <form action="/placeCard">
                     <input type="hidden" name="row" id="row" value="@row">
                     <input type="hidden" name="col" id="col" value="@col">
-                    <input type="image" src="@routes.Assets.versioned("images/media/Empty.png")">
+                    @if(playfield.getGrid.card(row, col).getID._1 == -1) {
+                      <input type="image" src="@routes.Assets.versioned("images/media/Empty.png")">
+                    } else {
+                      <input type="image" src="@{routes.Assets.versioned("images/media/" + List("D", "E", "G", "H", "I", "J", "K", "L", "N", "O", "R", "T", "U", "V", "C", "W")(playfield.getGrid.card(row, col).getID._1))}.png">
+                    }
                   </form>
                   <!-- <img src="@routes.Assets.versioned("images/media/Empty.png")" onclick=""> -->
                 </td>
@@ -24,13 +29,23 @@
             }
           </table>
         </div>
-        <div class="column" style="float: right;">
-          <h2>Spielerinfos</h2>
-          <ul>
-            @for(player <- playfield.getPlayers) {
-              <li>@player</li>
-            }
-          </ul>
+        <div class=column style="float: right;">
+          <div class="column" >
+            <h2>Spielerinfos</h2>
+            <ul>
+              @for(player <- playfield.getPlayers) {
+                <li>@player</li>
+              }
+            </ul>
+          </div>
+          <div>
+            <img src="@{routes.Assets.versioned("images/media/" + List("D", "E", "G", "H", "I", "J", "K", "L", "N", "O", "R", "T", "U", "V", "C", "W")(playfield.getCurrentFreshCard.getCard.getID._1))}.png">
+          </div>
+          <div>
+            <form action="/newGame">
+              <input type="submit" value="New Game">
+            </form>
+          </div>
         </div>
       </div>
     </div>

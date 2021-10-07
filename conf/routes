@@ -10,6 +10,7 @@ GET     /addPlayers                 controllers.HomeController.createGrid(size: 
 GET     /addPlayer                  controllers.HomeController.addPlayer(player: String)
 GET     /startGame                  controllers.HomeController.startGame()
 GET     /gameBoard                  controllers.HomeController.gameBoard()
+GET     /placeCard                  controllers.HomeController.placeCard(row: Int, col: Int, x: Int, y: Int)
 
 # Map static resources from the /public folder to the /assets URL path
 GET     /assets/*file               controllers.Assets.versioned(path="/public", file: Asset)
