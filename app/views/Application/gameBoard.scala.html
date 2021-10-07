@@ -1,0 +1,20 @@
+@(playfield: de.htwg.se.Carcassonne.model.playfieldComponent.PlayfieldInterface)
+
+@main("Carcassonne") {
+  <h1>GameBoard</h1>
+  <b>@playfield.getGrid.getSize</b>
+  <br></br>
+  
+
+  <table>
+      @for(row <- 0 until playfield.getGrid.getSize) {
+      <tr>
+        @for(col <- 0 until playfield.getGrid.getSize) {
+          <td>
+            <img src="@routes.Assets.versioned("images/media/Empty.png")">
+          </td>
+        }
+      </tr>
+      }
+  </table>
+}
