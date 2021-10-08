@@ -21,7 +21,6 @@ class HomeController @Inject()(val controllerComponents: ControllerComponents) e
   val injector: Injector = Guice.createInjector(new CarcassonneModule)
   val controller: ControllerInterface = injector.getInstance(classOf[ControllerInterface])
   val tui = new TUI(controller)
-  // val gui = new StartGUI(controller)
 
   /**
    * Create an Action to render an HTML page.
