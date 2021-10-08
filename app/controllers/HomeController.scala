@@ -41,12 +41,12 @@ class HomeController @Inject()(val controllerComponents: ControllerComponents) e
 
   def createGrid(size: Int) = Action { implicit request =>
     controller.createGrid(size.toInt)
-    Ok(views.html.addPlayers())
+    Ok(views.html.Application.addPlayer(controller.getPlayfield.getPlayers))
   }
 
   def addPlayer(player: String) = Action {
     controller.addPlayer(player)
-    Ok(views.html.addPlayer())
+    Ok(views.html.Application.addPlayer(controller.getPlayfield.getPlayers))
   }
 
   def startGame() = Action {

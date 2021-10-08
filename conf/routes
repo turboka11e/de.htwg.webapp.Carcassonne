@@ -6,7 +6,7 @@
 # An example controller showing a sample home page
 GET     /                           controllers.HomeController.index()
 GET     /newGame                    controllers.HomeController.newGame()
-GET     /addPlayers                 controllers.HomeController.createGrid(size: Int)
+GET     /createGrid                 controllers.HomeController.createGrid(size: Int)
 GET     /addPlayer                  controllers.HomeController.addPlayer(player: String)
 GET     /startGame                  controllers.HomeController.startGame()
 GET     /gameBoard                  controllers.HomeController.gameBoard()
