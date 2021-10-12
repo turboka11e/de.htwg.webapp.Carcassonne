@@ -72,4 +72,8 @@ class HomeController @Inject()(val controllerComponents: ControllerComponents) e
     Ok(views.html.Application.gameBoard(controller.getPlayfield))
   }
 
+  def rules() = Action {
+    Ok(views.html.rules())
+  }
+
 }
