@@ -13,5 +13,6 @@ GET     /gameBoard                  controllers.HomeController.gameBoard()
 GET     /placeCard                  controllers.HomeController.placeCard(row: Int, col: Int, x: Int, y: Int)
 GET     /rotate                     controllers.HomeController.rotate(dir: String)
 GET     /rules                      controllers.HomeController.rules()
+GET     /selectArea                 controllers.HomeController.selectArea(dir: String, x: Int, y: Int)
 # Map static resources from the /public folder to the /assets URL path
 GET     /assets/*file               controllers.Assets.versioned(path="/public", file: Asset)

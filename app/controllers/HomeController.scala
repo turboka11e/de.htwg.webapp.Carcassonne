@@ -50,16 +50,60 @@ class HomeController @Inject()(val controllerComponents: ControllerComponents) e
 
   def startGame() = Action {
     controller.firstCard()
-    Ok(views.html.Application.gameBoard(controller.getPlayfield))
+    Ok(views.html.Application.gameBoard(controller.getPlayfield, manicanList()))
   }
 
   def gameBoard() = Action {
-    Ok(views.html.Application.gameBoard(controller.getPlayfield))
+    val cards = List("D", "E", "G", "H", "I", "J", "K", "L", "N", "O", "R", "T", "U", "V", "C", "W")
+    
+    Ok(views.html.Application.gameBoard(controller.getPlayfield, manicanList()))
   }
+
+  def manicanList(): List[(String, String)] = {
+    val freshCardAreas = controller.getPlayfield.getCurrentFreshCard.getCard.getAreas
+    val dirCombi = List("north", "south", "west", "east")
+
+    var manicanList: List[(String, String)] = Nil
+
+    if (!freshCardAreas.exists(p => p.getPlayer != -1)) {
+        for (x <- freshCardAreas.indices) {
+            val selectDir: String = dirCombi.find(p => p.startsWith(freshCardAreas(x).getCorners.head.toString)).get
+            freshCardAreas(x).getValue match {
+            case 'c' => manicanList = (selectDir, "manicanEmpty") :: manicanList
+            case 'r' => manicanList = (selectDir, "manicanEmpty") :: manicanList
+            case 'g' =>
+          }
+        }
+    } else {
+      val dir = controller.getPlayfield.getCurrentFreshCard.getCard.getAreas.find(p => p.getPlayer != -1).get.getCorners.head
+      val combi = dirCombi.find(p => p.startsWith(dir.toString)).get
+      val playerManican = "manican" + controller.getPlayfield.getIsOn
+      manicanList = (combi, playerManican) :: manicanList
+    }
+    manicanList
+  }
+
+  def selectArea(dir: String, x: Int, y: Int) = Action {
+
+    dir match {
+      case "north" => putManican('n')
+      case "south" => putManican('s')
+      case "east" => putManican('e')
+      case "west" => putManican('w')
+    }
+    
+    Ok(views.html.Application.gameBoard(controller.getPlayfield, manicanList()))
+  }
+
+  def putManican(dir: Char): Unit = {
+        val area = controller.getPlayfield.getCurrentFreshCard.getCard.getAreaLookingFrom(dir)
+        val index = controller.getPlayfield.getCurrentFreshCard.getCard.getAreas.indexWhere(p => p.eq(area))
+        controller.selectArea(index)
+    }
 
   def placeCard(row: Int, col: Int, x: Int, y: Int) = Action {
     controller.placeCard(row, col)
-    Ok(views.html.Application.gameBoard(controller.getPlayfield))
+    Ok(views.html.Application.gameBoard(controller.getPlayfield, manicanList()))
   }
 
   def rotate(dir: String) = Action {
@@ -69,7 +113,7 @@ class HomeController @Inject()(val controllerComponents: ControllerComponents) e
     if (dir.equals("Right")) {
       controller.rotateRight
     }
-    Ok(views.html.Application.gameBoard(controller.getPlayfield))
+    Ok(views.html.Application.gameBoard(controller.getPlayfield, manicanList()))
   }
 
   def rules() = Action {
