@@ -8,21 +8,21 @@
       <div class="row">
         <div class="column" style="float: left;">
           <table cellspacing="0" cellpadding="0">
-            @for(col <- 0 until playfield.getGrid.getSize) {
+            @for(col <- 0 until playfield.grid.size) {
             <tr>
-              @for(row <- 0 until playfield.getGrid.getSize) {
+              @for(row <- 0 until playfield.grid.size) {
                 <td>
                   <form action="/placeCard" style="height: 80px; width: 80px;">
                     <input type="hidden" name="row" id="row" value="@row">
                     <input type="hidden" name="col" id="col" value="@col">
-                    @if(playfield.getGrid.card(row, col).getID._1 == -1) {
+                    @if(playfield.grid.card(row, col).id._1 == -1) {
                       <input type="image" src="@routes.Assets.versioned("images/media/Empty.png")">
                     } else {
                       <div class="cardPlaceholder">
-                        <img class="cardImage" src="@{routes.Assets.versioned("images/media/" + List("D", "E", "G", "H", "I", "J", "K", "L", "N", "O", "R", "T", "U", "V", "C", "W")(playfield.getGrid.card(row, col).getID._1))}.png" style="transform:rotate(@{List(0,90,180,270)(playfield.getGrid.card(row, col).getID._2)}deg); pointer-events: none">   
-                        @for(area <- playfield.getGrid.card(row, col).getAreas) {
-                          @if(area.getPlayer != -1) {
-                            <img style="pointer-events: none" class=@{List("north", "south", "west", "east").find(p => p.startsWith(area.getCorners.head.toString)).get} src="@{routes.Assets.versioned("images/media/manican" + area.getPlayer + ".png")}" />
+                        <img class="cardImage" src="@{routes.Assets.versioned("images/media/" + List("D", "E", "G", "H", "I", "J", "K", "L", "N", "O", "R", "T", "U", "V", "C", "W")(playfield.grid.card(row, col).id._1))}.png" style="transform:rotate(@{List(0,90,180,270)(playfield.grid.card(row, col).id._2)}deg); pointer-events: none">   
+                        @for(area <- playfield.grid.card(row, col).areas) {
+                          @if(area.player != -1) {
+                            <img style="pointer-events: none" class=@{List("north", "south", "west", "east").find(p => p.startsWith(area.corners.head.toString)).get} src="@{routes.Assets.versioned("images/media/manican" + area.player + ".png")}" />
                           }
                         }
                       </div>
@@ -38,7 +38,7 @@
           <div class="column" >
             <h2>Spielerinfos</h2>
             <ul>
-              @for(player <- playfield.getPlayers) {
+              @for(player <- playfield.players) {
                 <li>@player</li>
               }
             </ul>
@@ -46,7 +46,7 @@
           <div>
             
               <div class="cardPlaceholder">
-                <img class="cardImage" src="@{routes.Assets.versioned("images/media/" + List("D", "E", "G", "H", "I", "J", "K", "L", "N", "O", "R", "T", "U", "V", "C", "W")(playfield.getCurrentFreshCard.getCard.getID._1))}.png" style="transform:rotate(@{List(0,90,180,270)(playfield.getCurrentFreshCard.getCard.getID._2)}deg); pointer-events: none" />
+                <img class="cardImage" src="@{routes.Assets.versioned("images/media/" + List("D", "E", "G", "H", "I", "J", "K", "L", "N", "O", "R", "T", "U", "V", "C", "W")(playfield.freshCard.card.id._1))}.png" style="transform:rotate(@{List(0,90,180,270)(playfield.freshCard.card.id._2)}deg); pointer-events: none" />
                 @for((dir, path) <- manicanList) {
                   <form action="/selectArea">
                     <input type="hidden" name="dir" id="dir" value="@dir">

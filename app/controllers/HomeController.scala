@@ -40,12 +40,12 @@ class HomeController @Inject()(val controllerComponents: ControllerComponents) e
 
   def createGrid(size: Int) = Action { implicit request =>
     controller.createGrid(size.toInt)
-    Ok(views.html.Application.addPlayer(controller.getPlayfield.getPlayers))
+    Ok(views.html.Application.addPlayer(controller.getPlayfield.players))
   }
 
   def addPlayer(player: String) = Action {
     controller.addPlayer(player)
-    Ok(views.html.Application.addPlayer(controller.getPlayfield.getPlayers))
+    Ok(views.html.Application.addPlayer(controller.getPlayfield.players))
   }
 
   def startGame() = Action {
@@ -60,24 +60,24 @@ class HomeController @Inject()(val controllerComponents: ControllerComponents) e
   }
 
   def manicanList(): List[(String, String)] = {
-    val freshCardAreas = controller.getPlayfield.getCurrentFreshCard.getCard.getAreas
+    val freshCardAreas = controller.getPlayfield.freshCard.card.areas
     val dirCombi = List("north", "south", "west", "east")
 
     var manicanList: List[(String, String)] = Nil
 
-    if (!freshCardAreas.exists(p => p.getPlayer != -1)) {
+    if (!freshCardAreas.exists(p => p.player != -1)) {
         for (x <- freshCardAreas.indices) {
-            val selectDir: String = dirCombi.find(p => p.startsWith(freshCardAreas(x).getCorners.head.toString)).get
-            freshCardAreas(x).getValue match {
+            val selectDir: String = dirCombi.find(p => p.startsWith(freshCardAreas(x).corners.head.toString)).get
+            freshCardAreas(x).value match {
             case 'c' => manicanList = (selectDir, "manicanEmpty") :: manicanList
             case 'r' => manicanList = (selectDir, "manicanEmpty") :: manicanList
             case 'g' =>
           }
         }
     } else {
-      val dir = controller.getPlayfield.getCurrentFreshCard.getCard.getAreas.find(p => p.getPlayer != -1).get.getCorners.head
+      val dir = controller.getPlayfield.freshCard.card.areas.find(p => p.player != -1).get.corners.head
       val combi = dirCombi.find(p => p.startsWith(dir.toString)).get
-      val playerManican = "manican" + controller.getPlayfield.getIsOn
+      val playerManican = "manican" + controller.getPlayfield.isOn
       manicanList = (combi, playerManican) :: manicanList
     }
     manicanList
@@ -96,8 +96,8 @@ class HomeController @Inject()(val controllerComponents: ControllerComponents) e
   }
 
   def putManican(dir: Char): Unit = {
-        val area = controller.getPlayfield.getCurrentFreshCard.getCard.getAreaLookingFrom(dir)
-        val index = controller.getPlayfield.getCurrentFreshCard.getCard.getAreas.indexWhere(p => p.eq(area))
+        val area = controller.getPlayfield.freshCard.card.getAreaLookingFrom(dir)
+        val index = controller.getPlayfield.freshCard.card.areas.indexWhere(p => p.eq(area))
         controller.selectArea(index)
     }
 
