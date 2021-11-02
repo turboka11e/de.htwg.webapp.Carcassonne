@@ -16,7 +16,7 @@
                     <input type="hidden" name="row" id="row" value="@row">
                     <input type="hidden" name="col" id="col" value="@col">
                     @if(playfield.grid.card(row, col).id._1 == -1) {
-                      <input type="image" src="@routes.Assets.versioned("images/media/Empty.png")">
+                      <input type="image" style="border-radius: 5px;" src="@routes.Assets.versioned("images/media/Empty.png")">
                     } else {
                       <div class="cardPlaceholder">
                         <img class="cardImage" src="@{routes.Assets.versioned("images/media/" + List("D", "E", "G", "H", "I", "J", "K", "L", "N", "O", "R", "T", "U", "V", "C", "W")(playfield.grid.card(row, col).id._1))}.png" style="transform:rotate(@{List(0,90,180,270)(playfield.grid.card(row, col).id._2)}deg); pointer-events: none">   
