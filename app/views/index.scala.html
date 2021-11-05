@@ -1,14 +1,23 @@
 @()
 
 @main("Welcome to Play") {
-  <center>
-    <h1>Let's play Carcassonne!</h1>
-    <form action="/newGame">
-      <input type="submit" value="New Game">
-    </form>
-    <form action="/rules">
-      <input type="submit" value="Rules">
-    </form>
-    <!-- <button type="button" onclick="location.href='http://127.0.0.1:9000/newGame'">New Game</button> -->
-  </center>
-}
+
+  <div class="card-group center-stage">
+    <div class="card text-center" style="width: 18rem;">
+      <div class="card-body d-flex flex-column">
+        <h2 class="card-title fw-bold">Neues Spiel</h5>
+        <p class="card-text">Starte ein neues Spiel mit bis zu vier Spielern.</p>
+        <a type="button" class="mt-auto btn btn-outline-success btn-lg fw-bold" href="/newGame">Jetzt Spielen</a>
+      </div>
+    </div>
+    <div class="card text-center" style="width: 18rem;">
+      <div class="card-body d-flex flex-column">
+        <h2 class="card-title fw-bold">Regeln</h5>
+        <p class="card-text">Lerne die Grundregeln kennen.</p>
+        <a type="button" class="mt-auto btn btn-outline-info btn-lg fw-bold" href="/rules">Zu den Regeln</a>
+      </div>
+    </div>
+  </div>
+
+  }
+  
