@@ -1,12 +1,13 @@
 @(playfield: de.htwg.se.Carcassonne.model.playfieldComponent.PlayfieldInterface, manicanList: List[(String, String)])
 @main("Carcassonne") {
 
-  <center>
-    <img style="pointer-events: none; width: 842px; height: 152px;" src="@routes.Assets.versioned("images/media/CarcassonneText.png")">
-  </center>
-    <div style="width: 50%; margin: 0px auto;">
-      <div class="row">
-        <div class="column" style="float: left;">
+
+
+    <div class="my-5 container-sm">
+      <div class="row justify-content-center">
+        
+        <!-- Gameboard -->
+        <div class="mb-2 col-md-auto">
           <table cellspacing="0" cellpadding="0">
             @for(col <- 0 until playfield.grid.size) {
             <tr>
@@ -34,35 +35,62 @@
             }
           </table>
         </div>
-        <div class=column style="float: right;">
-          <div class="column" >
-            <h2>Spielerinfos</h2>
-            <ul>
+        
+        
+        <!-- Spielerinfos -->
+        <div class=col-md-auto>
+          
+          <div class="card" style="width: 18rem;">
+            <div class="card-header">
+              <h3 class="fst-italic fw-bold">Spielerinfos</h3>
+            </div>
+            <ul class="list-group list-group-flush">
               @for(player <- playfield.players) {
-                <li>@player</li>
+                <li class="list-group-item">@player</li>
               }
             </ul>
-          </div>
-          <div>
-            
-              <div class="cardPlaceholder">
-                <img class="cardImage" src="@{routes.Assets.versioned("images/media/" + List("D", "E", "G", "H", "I", "J", "K", "L", "N", "O", "R", "T", "U", "V", "C", "W")(playfield.freshCard.card.id._1))}.png" style="transform:rotate(@{List(0,90,180,270)(playfield.freshCard.card.id._2)}deg); pointer-events: none" />
-                @for((dir, path) <- manicanList) {
-                  <form action="/selectArea">
-                    <input type="hidden" name="dir" id="dir" value="@dir">
-                    <input type="image" class=@dir src="@{routes.Assets.versioned("images/media/" + path + ".png")}" />
+            <div class="card-body">
+              
+              <div class="row align-items-center">
+                <div class="col">
+                  <form action="/rotate">
+                    <button class="btn btn-lg btn-secondary rounded-circle" type="submit" name="dir" value="Left"><i class='fas fa-undo'></i></button>
                   </form>
-                  }
                 </div>
-                
-          </div>
-          <div>
-            <form action="/rotate">
-              <input type="submit" name="dir" id="dir" value="Left">
-              <input type="submit" name="dir" id="dir" value="Right">
-            </form>
+
+                <div class="col">
+                  <!-- Kartenauswahl -->
+                  <div>
+                      <div class="cardPlaceholder">
+                        <img class="cardImage" src="@{routes.Assets.versioned("images/media/" + List("D", "E", "G", "H", "I", "J", "K", "L", "N", "O", "R", "T", "U", "V", "C", "W")(playfield.freshCard.card.id._1))}.png" style="transform:rotate(@{List(0,90,180,270)(playfield.freshCard.card.id._2)}deg); pointer-events: none" />
+                        @for((dir, path) <- manicanList) {
+                          <form action="/selectArea">
+                            <input type="hidden" name="dir" id="dir" value="@dir">
+                            <input type="image" class=@dir src="@{routes.Assets.versioned("images/media/" + path + ".png")}" />
+                          </form>
+                          }
+                        </div>
+                  </div>
+                  <!-- Kartenauswahl Ende -->
+                </div>
+
+                <div class="col">
+                  <form action="/rotate">
+                    <button class="btn btn-lg btn-secondary rounded-circle" type="submit" name="dir" value="Right"><i class='fas fa-redo'></i></button>
+                  </form>
+                </div>
+
+              </div>
+
+
+              
+            </div>
+
           </div>
         </div>
+
+
+
       </div>
     </div>
 
