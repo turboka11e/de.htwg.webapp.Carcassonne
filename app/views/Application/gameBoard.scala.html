@@ -1,20 +1,19 @@
 @(playfield: de.htwg.se.Carcassonne.model.playfieldComponent.PlayfieldInterface, manicanList: List[(String, String)])
 @main("Carcassonne") {
 
-
-
-    <div class="my-5 container-sm">
-      <div class="row justify-content-center align-items-center">
-        
-        <!-- Gameboard -->
+  
+  <div class="my-5 container-sm">
+    <div class="row justify-content-center align-items-center">
+      
+      <!-- Gameboard -->
         <div class="mb-2 col-md-auto">
           <table cellspacing="0" cellpadding="0">
             @for(col <- 0 until playfield.grid.size) {
-            <tr>
-              @for(row <- 0 until playfield.grid.size) {
-                <td>
-                  <form action="/placeCard" style="height: 80px; width: 80px;">
-                    <input type="hidden" name="row" id="row" value="@row">
+              <tr>
+                @for(row <- 0 until playfield.grid.size) {
+                  <td>
+                    <form action="/placeCard" style="height: 80px; width: 80px;">
+                      <input type="hidden" name="row" id="row" value="@row">
                     <input type="hidden" name="col" id="col" value="@col">
                     @if(playfield.grid.card(row, col).id._1 == -1) {
                       <input type="image" style="border-radius: 5px;" src="@routes.Assets.versioned("images/media/Empty.png")">
@@ -53,20 +52,23 @@
               
               <div class="row align-items-center">
                 <div class="col">
-                  <form action="/rotate">
-                    <button class="btn btn-lg btn-secondary rounded-circle" type="submit" name="dir" value="Left"><i class='fas fa-undo'></i></button>
+                  <form name="leftButtonForm" action="/rotate" onsubmit="return rotateImageLeft()">
+                    <input type="hidden" name="dir" id="dir" value="Left">
+                    <button class="btn btn-lg btn-secondary rounded-circle"><i class='fas fa-undo'></i></button>
                   </form>
                 </div>
 
                 <div class="col">
                   <!-- Kartenauswahl -->
                   <div>
-                      <div class="cardPlaceholder">
-                        <img class="cardImage" src="@{routes.Assets.versioned("images/media/" + List("D", "E", "G", "H", "I", "J", "K", "L", "N", "O", "R", "T", "U", "V", "C", "W")(playfield.freshCard.card.id._1))}.png" style="transform:rotate(@{List(0,90,180,270)(playfield.freshCard.card.id._2)}deg); pointer-events: none" />
+                    <div class="cardPlaceholder">
+                      <img id="cardP" class="cardImage; rotate" src="@{routes.Assets.versioned("images/media/" + List("D", "E", "G", "H", "I", "J", "K", "L", "N", "O", "R", "T", "U", "V", "C", "W")(playfield.freshCard.card.id._1))}.png" style="transform:rotate(@{List(0,90,180,270)(playfield.freshCard.card.id._2)}deg); pointer-events: none" />
                         @for((dir, path) <- manicanList) {
                           <form action="/selectArea">
                             <input type="hidden" name="dir" id="dir" value="@dir">
-                            <input type="image" class=@dir src="@{routes.Assets.versioned("images/media/" + path + ".png")}" />
+                            <div name="manicans">
+                              <input type="image" class="@dir" src="@{routes.Assets.versioned("images/media/" + path + ".png")}" />
+                            </div>
                           </form>
                           }
                         </div>
@@ -75,8 +77,9 @@
                 </div>
 
                 <div class="col">
-                  <form action="/rotate">
-                    <button class="btn btn-lg btn-secondary rounded-circle" type="submit" name="dir" value="Right"><i class='fas fa-redo'></i></button>
+                  <form name="rightButtonForm" action="/rotate" onsubmit="return rotateImageRight()">
+                    <input type="hidden" name="dir" id="dir" value="Right">
+                    <button class="btn btn-lg btn-secondary rounded-circle" type="submit"><i class='fas fa-redo'></i></button>
                   </form>
                 </div>
 
@@ -94,4 +97,72 @@
       </div>
     </div>
 
+      <script>
+        var readIn = "@{List(0,90,180,270)(playfield.freshCard.card.id._2)}";
+        var current_rotation = parseInt(readIn);
+
+        const delay = millis => new Promise((resolve, reject) => {
+          setTimeout(_ => resolve(), millis)
+        });
+
+
+        function rotateImageLeft() {
+          console.log(current_rotation);  
+              console.log("test");
+
+              var manicans = document.getElementsByName("manicans");
+
+              for (let item of manicans) {
+                item.style.visibility = "hidden";
+              }
+
+              var elem = document.getElementById("cardP");
+              current_rotation -= 90;
+              
+
+              elem.style.transform = "rotate(" + current_rotation + "deg)";
+              var x = Promise.all(
+                elem.getAnimations().map(
+                  function(animation) {
+                    return animation.finished
+                  }
+                )
+              ).then(
+                function() {
+                  document.leftButtonForm.submit();
+                  return true;
+                }
+              )
+            return false;
+        }
+
+        function rotateImageRight() {
+          console.log(current_rotation);  
+          var manicans = document.getElementsByName("manicans");
+
+          for (let item of manicans) {
+            item.style.visibility = "hidden";
+          }
+
+          var elem = document.getElementById("cardP");
+          current_rotation += 90;
+          
+          elem.style.transform = "rotate(" + current_rotation + "deg)";
+          var x = Promise.all(
+            elem.getAnimations().map(
+              function(animation) {
+                return animation.finished
+              }
+            )
+          ).then(
+            function() {
+              document.rightButtonForm.submit();
+              return true;
+            }
+          )
+
+          return false;
+        }
+      </script>
+      
 }
