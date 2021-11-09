@@ -101,11 +101,6 @@
         var readIn = "@{List(0,90,180,270)(playfield.freshCard.card.id._2)}";
         var current_rotation = parseInt(readIn);
 
-        const delay = millis => new Promise((resolve, reject) => {
-          setTimeout(_ => resolve(), millis)
-        });
-
-
         function rotateImageLeft() {
           console.log(current_rotation);  
               console.log("test");
