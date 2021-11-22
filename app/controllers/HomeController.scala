@@ -33,45 +33,20 @@ class HomeController @Inject() (val controllerComponents: ControllerComponents)
     Ok(views.html.index())
   }
 
-  def newGame = Action { request =>
+  def newGame(size: Int, p1: String, p2: String, p3: String, p4: String) = Action { request =>
     controller.newGame()
-    Ok(views.html.newGame())
-  }
-
-  def createGrid(size: Int) = Action { implicit request =>
-    controller.createGrid(size.toInt)
-    Ok(views.html.Application.addPlayer(controller.getPlayfield.players))
-  }
-
-  def addPlayer(player: String) = Action {
-    controller.addPlayer(player)
-    Ok(views.html.Application.addPlayer(controller.getPlayfield.players))
-  }
-
-  def startGame() = Action {
+    controller.createGrid(size)
     controller.firstCard()
+
+    for (player <- List(p1, p2, p3, p4)) {
+      if(!player.trim.isEmpty) controller.addPlayer(player)
+    }
+
     Redirect(routes.HomeController.gameBoard())
   }
 
   def gameBoard() = Action {
-    val cards = List(
-      "D",
-      "E",
-      "G",
-      "H",
-      "I",
-      "J",
-      "K",
-      "L",
-      "N",
-      "O",
-      "R",
-      "T",
-      "U",
-      "V",
-      "C",
-      "W"
-    )
+    val cards = List("D","E", "G", "H", "I", "J", "K", "L",  "N", "O", "R", "T", "U", "V", "C", "W")
     Ok(views.html.Application.gameBoard(controller.getPlayfield, manicanList()))
   }
 
@@ -143,11 +118,12 @@ class HomeController @Inject() (val controllerComponents: ControllerComponents)
         println("Updated: Row " + row + " Col " + col);
         controller.placeCard(row, col)
 
-        var respond = JsObject(
-        "tile" -> JsString(views.html.Application._tile(controller.getPlayfield, manicanList(), row, col).toString) ::
-        "freshCard" -> JsString(views.html.Application._freshCard(controller.getPlayfield, manicanList()).toString) ::
-        "stats" -> JsString(views.html.Application._stats(controller.getPlayfield).toString) ::
-          Nil);
+        var respond = Json.obj(
+          "tile" -> views.html.Application._tile(controller.getPlayfield, manicanList(), row, col).toString,
+          "freshCard" -> views.html.Application._freshCard(controller.getPlayfield, manicanList()).toString,
+          "stats" -> views.html.Application._stats(controller.getPlayfield).toString,
+        )
+
         Ok(respond).as(JSON)
       }
       .getOrElse {
@@ -168,10 +144,7 @@ class HomeController @Inject() (val controllerComponents: ControllerComponents)
         if (dir.equals("Right")) {
           controller.rotateRight
         }
-        Ok(
-          views.html.Application
-            ._freshCard(controller.getPlayfield, manicanList())
-        ).as(HTML)
+        Ok(views.html.Application._freshCard(controller.getPlayfield, manicanList())).as(HTML)
       }
       .getOrElse {
         println(request.body)

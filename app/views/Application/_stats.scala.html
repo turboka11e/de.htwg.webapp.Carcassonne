@@ -1,5 +1,11 @@
 @(playfield: de.htwg.se.Carcassonne.model.playfieldComponent.PlayfieldInterface)
 
-@for(player <- playfield.players) { 
-    <li class="list-group-item">@player</li>
+@for((player,i) <- playfield.players.zipWithIndex) {
+
+    @if(i == playfield.isOn) {
+        <li class="list-group-item fw-bold" style='color: @{List("Blue", "Red", "Gold", "Green")(i)};' >@player <span class="badge bg-success">Am Zug</span></li>
+    } else {
+        <li class="list-group-item fw-bold" style='color: @{List("Blue", "Red", "Gold", "Green")(i)};' >@player</li>
+    }
+
 }

@@ -103,10 +103,10 @@ var ajaxManican = function (e) {
     e.preventDefault();
     e.stopImmediatePropagation();
 
-    console.log( "manican " + $( this ).attr( "dir" ));
+    console.log("manican " + $(this).attr("dir"));
 
     let request = {
-        "dir": $( this ).attr( "dir" )
+        "dir": $(this).attr("dir")
     };
 
     $.ajax({
