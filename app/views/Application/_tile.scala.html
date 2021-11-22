@@ -1,0 +1,18 @@
+@(playfield: de.htwg.se.Carcassonne.model.playfieldComponent.PlayfieldInterface, manicanList: List[(String, String)], row: Int, col: Int)
+
+@if(playfield.grid.card(row, col).id._1 == -1) {
+    <input type="image" style="border-radius: 5px;" src='@routes.Assets.versioned("images/media/Empty.png")'>
+    } else {
+    <div class="cardPlaceholder">
+      <img class="cardImage" src='@{routes.Assets.versioned("images/media/" + List("D", "E" , "G" , "H" , "I"
+        , "J" , "K" , "L" , "N" , "O" , "R" , "T" , "U" , "V" , "C" , "W" )(playfield.grid.card(row, col).id._1))}.png'
+        style="transform:rotate(@{List(0,90,180,270)(playfield.grid.card(row, col).id._2)}deg); pointer-events: none">
+      @for(area <- playfield.grid.card(row, col).areas) { 
+          @if(area.player != -1) { 
+            <img style="pointer-events: none" 
+            class='@{List("north", "south" , "west" , "east" ).find(p=>p.startsWith(area.corners.head.toString)).get}'
+            src='@{routes.Assets.versioned("images/media/manican" + area.player + ".png")}' />
+          }
+        }
+    </div>
+}

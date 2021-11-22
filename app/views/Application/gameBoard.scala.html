@@ -1,168 +1,64 @@
 @(playfield: de.htwg.se.Carcassonne.model.playfieldComponent.PlayfieldInterface, manicanList: List[(String, String)])
 @main("Carcassonne") {
 
-  
-  <div class="my-5 container-sm">
-    <div class="row justify-content-center align-items-center">
-      
-      <!-- Gameboard -->
-        <div class="mb-2 col-md-auto">
-          <table cellspacing="0" cellpadding="0">
-            @for(col <- 0 until playfield.grid.size) {
-              <tr>
-                @for(row <- 0 until playfield.grid.size) {
-                  <td>
-                    <form action="/placeCard" style="height: 80px; width: 80px;">
-                      <input type="hidden" name="row" id="row" value="@row">
-                    <input type="hidden" name="col" id="col" value="@col">
-                    @if(playfield.grid.card(row, col).id._1 == -1) {
-                      <input type="image" style="border-radius: 5px;" src="@routes.Assets.versioned("images/media/Empty.png")">
-                    } else {
-                      <div class="cardPlaceholder">
-                        <img class="cardImage" src="@{routes.Assets.versioned("images/media/" + List("D", "E", "G", "H", "I", "J", "K", "L", "N", "O", "R", "T", "U", "V", "C", "W")(playfield.grid.card(row, col).id._1))}.png" style="transform:rotate(@{List(0,90,180,270)(playfield.grid.card(row, col).id._2)}deg); pointer-events: none">   
-                        @for(area <- playfield.grid.card(row, col).areas) {
-                          @if(area.player != -1) {
-                            <img style="pointer-events: none" class=@{List("north", "south", "west", "east").find(p => p.startsWith(area.corners.head.toString)).get} src="@{routes.Assets.versioned("images/media/manican" + area.player + ".png")}" />
-                          }
-                        }
-                      </div>
-                    }
-                  </form>
-                </td>
-              }
-            </tr>
+
+<div class="my-5 container-sm">
+  <div class="row justify-content-center align-items-center">
+
+    <!-- Gameboard -->
+    <div class="mb-2 col-md-auto">
+      <table cellspacing="0" cellpadding="0">
+        @for(col <- 0 until playfield.grid.size) { 
+          <tr>
+            @for(row <- 0 until playfield.grid.size) { 
+              <td>
+                <form id='row@{row}@{col}' row="@row" col="@col" class="tile" style="height: 80px; width: 80px;">
+                  @_tile(playfield, manicanList, row, col)
+                </form>
+              </td>
             }
-          </table>
+          </tr>
+          }
+      </table>
+    </div>
+
+
+    <!-- Spielerinfos -->
+    <div class=col-md-auto>
+
+      <div class="card shadow-lg" style="width: 18rem;">
+        <div class="card-header">
+          <h3 class="fst-italic fw-bold">Spielerinfos</h3>
         </div>
-        
-        
-        <!-- Spielerinfos -->
-        <div class=col-md-auto>
-          
-          <div class="card" style="width: 18rem;">
-            <div class="card-header">
-              <h3 class="fst-italic fw-bold">Spielerinfos</h3>
-            </div>
-            <ul class="list-group list-group-flush">
-              @for(player <- playfield.players) {
-                <li class="list-group-item">@player</li>
-              }
-            </ul>
-            <div class="card-body">
-              
-              <div class="row align-items-center">
-                <div class="col">
-                  <form name="leftButtonForm" action="/rotate" onsubmit="return rotateImageLeft()">
-                    <input type="hidden" name="dir" id="dir" value="Left">
-                    <button class="btn btn-lg btn-secondary rounded-circle"><i class='fas fa-undo'></i></button>
-                  </form>
-                </div>
+        <ul id="stats" class="list-group list-group-flush">
+          @_stats(playfield)
+        </ul>
+        <div class="card-body">
 
-                <div class="col">
-                  <!-- Kartenauswahl -->
-                  <div>
-                    <div class="cardPlaceholder">
-                      <img id="cardP" class="cardImage; rotate" src="@{routes.Assets.versioned("images/media/" + List("D", "E", "G", "H", "I", "J", "K", "L", "N", "O", "R", "T", "U", "V", "C", "W")(playfield.freshCard.card.id._1))}.png" style="transform:rotate(@{List(0,90,180,270)(playfield.freshCard.card.id._2)}deg); pointer-events: none" />
-                        @for((dir, path) <- manicanList) {
-                          <form action="/selectArea">
-                            <input type="hidden" name="dir" id="dir" value="@dir">
-                            <div name="manicans">
-                              <input type="image" class="@dir" src="@{routes.Assets.versioned("images/media/" + path + ".png")}" />
-                            </div>
-                          </form>
-                          }
-                        </div>
-                  </div>
-                  <!-- Kartenauswahl Ende -->
-                </div>
-
-                <div class="col">
-                  <form name="rightButtonForm" action="/rotate" onsubmit="return rotateImageRight()">
-                    <input type="hidden" name="dir" id="dir" value="Right">
-                    <button class="btn btn-lg btn-secondary rounded-circle" type="submit"><i class='fas fa-redo'></i></button>
-                  </form>
-                </div>
-
-              </div>
-
-
-              
+          <div class="row align-items-center">
+            <div class="col">
+              <form id="leftButtonForm">
+                <button class="btn btn-lg btn-secondary rounded-circle"><i class='fas fa-undo'></i></button>
+              </form>
             </div>
 
+            <div id="freshCard" style="height: 85px;" class="col">
+              @_freshCard(playfield, manicanList)
+            </div>
+
+            <div class="col">
+              <form id="rightButtonForm">
+                <button class="btn btn-lg btn-secondary rounded-circle" type="submit"><i
+                    class='fas fa-redo'></i></button>
+              </form>
+            </div>
           </div>
+
         </div>
-
-
-
       </div>
     </div>
 
-      <script>
-        var readIn = "@{List(0,90,180,270)(playfield.freshCard.card.id._2)}";
-        var current_rotation = parseInt(readIn);
-
-        const delay = millis => new Promise((resolve, reject) => {
-          setTimeout(_ => resolve(), millis)
-        });
-
-
-        function rotateImageLeft() {
-          console.log(current_rotation);  
-              console.log("test");
-
-              var manicans = document.getElementsByName("manicans");
-
-              for (let item of manicans) {
-                item.style.visibility = "hidden";
-              }
-
-              var elem = document.getElementById("cardP");
-              current_rotation -= 90;
-              
-
-              elem.style.transform = "rotate(" + current_rotation + "deg)";
-              var x = Promise.all(
-                elem.getAnimations().map(
-                  function(animation) {
-                    return animation.finished
-                  }
-                )
-              ).then(
-                function() {
-                  document.leftButtonForm.submit();
-                  return true;
-                }
-              )
-            return false;
-        }
-
-        function rotateImageRight() {
-          console.log(current_rotation);  
-          var manicans = document.getElementsByName("manicans");
-
-          for (let item of manicans) {
-            item.style.visibility = "hidden";
-          }
-
-          var elem = document.getElementById("cardP");
-          current_rotation += 90;
-          
-          elem.style.transform = "rotate(" + current_rotation + "deg)";
-          var x = Promise.all(
-            elem.getAnimations().map(
-              function(animation) {
-                return animation.finished
-              }
-            )
-          ).then(
-            function() {
-              document.rightButtonForm.submit();
-              return true;
-            }
-          )
-
-          return false;
-        }
-      </script>
-      
+  </div>
+</div>
+<script src='@routes.Assets.versioned("javascripts/boardgame.js")' type="text/javascript"></script>
 }

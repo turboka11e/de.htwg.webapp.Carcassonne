@@ -1,0 +1,5 @@
+@(playfield: de.htwg.se.Carcassonne.model.playfieldComponent.PlayfieldInterface)
+
+@for(player <- playfield.players) { 
+    <li class="list-group-item">@player</li>
+}

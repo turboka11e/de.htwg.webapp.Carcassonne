@@ -1,8 +1,8 @@
 logs
 target
-/.metals
+.metals
 /.vscode
-/.bsp
+.bsp
 /.idea
 /.idea_modules
 /.classpath
