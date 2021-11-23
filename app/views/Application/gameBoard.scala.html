@@ -12,7 +12,7 @@
           <tr>
             @for(row <- 0 until playfield.grid.size) { 
               <td>
-                <form id='row@{row}@{col}' row="@row" col="@col" class="tile" style="height: 80px; width: 80px;">
+                <form id='row@{row}col@{col}' row="@row" col="@col" class="tile" style="height: 80px; width: 80px;">
                   @_tile(playfield, manicanList, row, col)
                 </form>
               </td>

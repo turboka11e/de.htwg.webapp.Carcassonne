@@ -2,84 +2,85 @@
 
 @main("Welcome to Play") {
 
-<div class="card-group center-stage">
-  <div class="card text-center" style="width: 18rem;">
-    <div class="card-body d-flex flex-column">
-      <h2 class="card-title fw-bold">Neues Spiel</h5>
-        <p class="card-text">Starte ein neues Spiel mit bis zu vier Spielern.</p>
+    <script src="@routes.Assets.versioned("javascripts/homescreen.js")" type="text/javascript"></script>
+    <div class="card-group center-stage">
+        <div class="card text-center" style="width: 18rem;">
+            <div class="card-body d-flex flex-column">
+                <h2 class="card-title fw-bold">Neues Spiel</h2>
+                    <p class="card-text">Starte ein neues Spiel mit bis zu vier Spielern.</p>
 
-        <!-- Button trigger modal -->
-        <button type="button" class="mt-auto btn btn-outline-success btn-lg fw-bold" data-bs-toggle="modal"
-          data-bs-target="#exampleModal">
-          Jetzt Spielen
-        </button>
+                        <!-- Button trigger modal -->
+                    <button type="button" class="mt-auto btn btn-outline-success btn-lg fw-bold" data-bs-toggle="modal"
+                    data-bs-target="#exampleModal">
+                        Jetzt Spielen
+                    </button>
 
-    </div>
-  </div>
-  <div class="card text-center" style="width: 18rem;">
-    <div class="card-body d-flex flex-column">
-      <h2 class="card-title fw-bold">Regeln</h5>
-        <p class="card-text">Lerne die Grundregeln kennen.</p>
-        <a type="button" class="mt-auto btn btn-outline-info btn-lg fw-bold" href="/rules">Zu den Regeln</a>
-    </div>
-  </div>
-</div>
-
-
-<!-- Modal -->
-<div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-  <div class="modal-dialog modal-dialog-centered">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title fw-bold" id="exampleModalLabel">Neues Spiel erstellen</h5>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-      </div>
-
-      <form action="/newGame">
-        <div class="modal-body">
-
-          <div class="row d-flex justify-content-center">
-            
-            <div class="mb-3 row">
-              <div class="col">
-                <p class="fw-bold">Spielgrösse</p>
-              </div>
-              <select class="form-select col" id="feldgroesse" name="size">
-                <option value="3">Klein</option>
-                <option selected value="6">Mittel</option>
-                <option value="9">Groß</option>
-              </select>
             </div>
-
-            <div class="row row-cols-2">
-              <label for="validationCustom01" class="form-label fw-bold">Spieler 1</label>
-              <input type="text" class="mb-3 form-control" id="validationCustom01" placeholder="Name" name="p1" id="p1"
-                autofocus="autofocus" onfocus="this.select()" required>
-
-              <label for="validationCustom01" class="form-label fw-bold">Spieler 2</label>
-              <input type="text" class="mb-3 form-control" id="validationCustom01" placeholder="Name" name="p2" id="p2"
-                autofocus="autofocus">
-
-              <label for="validationCustom01" class="form-label fw-bold">Spieler 3</label>
-              <input type="text" class="mb-3 form-control" id="validationCustom01" placeholder="Name" name="p3" id="p3"
-                autofocus="autofocus">
-
-              <label for="validationCustom01" class="form-label fw-bold">Spieler 4</label>
-              <input type="text" class="mb-3 form-control" id="validationCustom01" placeholder="Name" name="p4" id="p4"
-                autofocus="autofocus">
+        </div>
+        <div class="card text-center" style="width: 18rem;">
+            <div class="card-body d-flex flex-column">
+                <h2 class="card-title fw-bold">Regeln</h2>
+                    <p class="card-text">Lerne die Grundregeln kennen.</p>
+                    <a type="button" class="mt-auto btn btn-outline-info btn-lg fw-bold" href="/rules">Zu den Regeln</a>
             </div>
-          </div>
-
-
         </div>
-
-        <div class="modal-footer">
-          <button type="button" class="btn btn-outline-danger" data-bs-dismiss="modal">Abbrechen</button>
-          <button type="submit" class="btn btn-success">Spiel Starten</button>
-        </div>
-      </form>
     </div>
-  </div>
-</div>
+
+
+        <!-- Modal -->
+    <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title fw-bold" id="exampleModalLabel">Neues Spiel erstellen</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+
+                <form action="/newGame">
+                    <div class="modal-body">
+
+                        <div class="row d-flex justify-content-center">
+
+                            <div class="mb-3 row">
+                                <div class="col">
+                                    <p class="fw-bold">Spielgrösse</p>
+                                </div>
+                                <select class="form-select col" id="feldgroesse" name="size">
+                                    <option value="3">Klein</option>
+                                    <option selected value="6">Mittel</option>
+                                    <option value="9">Groß</option>
+                                </select>
+                            </div>
+
+                            <div class="row row-cols-2">
+                                <label for="validationCustom01" class="form-label fw-bold">Spieler 1</label>
+                                <input type="text" class="mb-3 form-control" id="validationCustom01" placeholder="Name" name="p1" id="p1"
+                                autofocus="autofocus" onfocus="this.select()" required>
+
+                                <label for="validationCustom01" class="form-label fw-bold">Spieler 2</label>
+                                <input type="text" class="mb-3 form-control" id="validationCustom01" placeholder="Name" name="p2" id="p2"
+                                autofocus="autofocus">
+
+                                <label for="validationCustom01" class="form-label fw-bold">Spieler 3</label>
+                                <input type="text" class="mb-3 form-control" id="validationCustom01" placeholder="Name" name="p3" id="p3"
+                                autofocus="autofocus">
+
+                                <label for="validationCustom01" class="form-label fw-bold">Spieler 4</label>
+                                <input type="text" class="mb-3 form-control" id="validationCustom01" placeholder="Name" name="p4" id="p4"
+                                autofocus="autofocus">
+                            </div>
+                        </div>
+
+
+                    </div>
+
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-outline-danger" data-bs-dismiss="modal">Abbrechen</button>
+                        <button type="submit" class="btn btn-success">Spiel Starten</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
 
 }
