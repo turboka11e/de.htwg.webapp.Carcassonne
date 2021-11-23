@@ -46,8 +46,11 @@ class HomeController @Inject() (val controllerComponents: ControllerComponents)
   }
 
   def gameBoard() = Action {
-    val cards = List("D","E", "G", "H", "I", "J", "K", "L",  "N", "O", "R", "T", "U", "V", "C", "W")
-    Ok(views.html.Application.gameBoard(controller.getPlayfield, manicanList()))
+    if (controller.getPlayfield.gameState < 2) {
+      Ok(views.html.index())
+    } else {  
+      Ok(views.html.Application.gameBoard(controller.getPlayfield, manicanList()))
+    }
   }
 
   def manicanList(): List[(String, String)] = {

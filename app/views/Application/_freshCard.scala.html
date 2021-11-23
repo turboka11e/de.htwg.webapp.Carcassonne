@@ -1,9 +1,9 @@
 @(playfield: de.htwg.se.Carcassonne.model.playfieldComponent.PlayfieldInterface, manicanList: List[(String, String)])
 
 <div class="cardPlaceholder">
-    <img id="cardP" rotation="@{List(0,90,180,270)(playfield.freshCard.card.id._2)}" class="cardImage; rotate; rounded-3"
+    <img id="cardP" rotation="@{List(0,90,180,270)(playfield.freshCard.card.id._2)}" class="cardImage; rotate"
         src='@{routes.Assets.versioned("images/media/" + List("D", "E" , "G" , "H" , "I" , "J" , "K" , "L", "N" , "O" , "R" , "T" , "U" , "V" , "C" , "W" )(playfield.freshCard.card.id._1))}.png'
-        style='transform:rotate(@{List(0,90,180,270)(playfield.freshCard.card.id._2)}deg); pointer-events: none' />
+        style='transform:rotate(@{List(0,90,180,270)(playfield.freshCard.card.id._2)}deg); pointer-events: none; border-radius: 5px;' />
     @for((dir, path) <- manicanList) { 
         <form class="manican" dir="@dir">
             <div name="manicans">
