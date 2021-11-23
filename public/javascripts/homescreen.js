@@ -1,4 +1,4 @@
-let websocket = new WebSocket("ws://localhost:9000/websocket");
+let websocket = new WebSocket("ws://" + location.hostname + ":9000/websocket");
 const connectWebSocket = handleData => {
     websocket.onopen = (event) => {
         console.log("Connected to Websocket");
@@ -14,7 +14,7 @@ const connectWebSocket = handleData => {
 
     websocket.onerror = (error) => {
         console.log("Error in Websocket Occured: " + error);
-        websocket = new WebSocket("ws://localhost:9000/websocket");
+        websocket = new WebSocket("ws://" + location.hostname + ":9000/websocket");
         connectWebSocket(handle)
     };
 
