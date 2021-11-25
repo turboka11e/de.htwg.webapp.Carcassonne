@@ -63,103 +63,6 @@ class GameController @Inject() (val controllerComponents: ControllerComponents)(
     }
   }
 
-  def selectArea(): Action[AnyContent] = Action { implicit request =>
-    val json = request.body.asJson
-    json
-      .map { json =>
-        val dir = (json \ "dir").as[String];
-        println("Selected Manican: " + dir);
-        dir match {
-          case "north" => putManican('n')
-          case "south" => putManican('s')
-          case "east"  => putManican('e')
-          case "west"  => putManican('w')
-        }
-        Ok(
-          views.html.Application
-            ._freshCard(controller.getPlayfield, manicanList(controller))
-        ).as(HTML)
-      }
-      .getOrElse {
-        InternalServerError("Error")
-      }
-  }
-
-  def putManican(dir: Char): Unit = {
-    val area = controller.getPlayfield.freshCard.card.getAreaLookingFrom(dir)
-    val index =
-      controller.getPlayfield.freshCard.card.areas.indexWhere(p => p.eq(area))
-    controller.selectArea(index)
-  }
-
-  def placeCard(): Action[AnyContent] = Action { implicit request =>
-    val json = request.body.asJson
-    json
-      .map { json =>
-        val row = (json \ "row").as[Int];
-        val col = (json \ "col").as[Int];
-        println("Updated: Row " + row + " Col " + col);
-        controller.placeCard(row, col)
-        controller.placeAble()
-
-        val respond = Json.obj(
-          "tile" -> views.html.Application
-            ._tile(controller.getPlayfield, manicanList(controller), row, col)
-            .toString,
-          "freshCard" -> views.html.Application
-            ._freshCard(controller.getPlayfield, manicanList(controller))
-            .toString,
-          "stats" -> views.html.Application
-            ._stats(controller.getPlayfield)
-            .toString
-        )
-
-        Ok(respond).as(JSON)
-      }
-      .getOrElse {
-        InternalServerError("Error")
-      }
-  }
-
-  def rotate(): Action[AnyContent] = Action { implicit request =>
-    val json = request.body.asJson
-
-    json
-      .map { json =>
-        val dir = (json \ "dir").as[String];
-        println(dir);
-        if (dir.equals("Left")) {
-          controller.rotateLeft()
-        }
-        if (dir.equals("Right")) {
-          controller.rotateRight()
-        }
-        Ok(
-          views.html.Application
-            ._freshCard(controller.getPlayfield, manicanList(controller))
-        ).as(HTML)
-      }
-      .getOrElse {
-        println(request.body)
-        Ok("error")
-      }
-  }
-
-  def playfield(): Action[AnyContent] = Action { implicit request =>
-    val username = request.session.get("username")
-
-    val freshCardId = controller.getPlayfield.freshCard.card.id._1
-
-    val path = af.path("images/media/" + cardsIdsList(freshCardId) + ".png")
-
-    val json = Json.obj(
-      "path" -> path,
-      "username" -> username.get,
-    )
-
-    Ok(json).as(JSON)
-  }
-
   def socket: WebSocket = WebSocket.acceptOrResult[String, String] { request =>
     Future.successful(request.session.get("username") match {
       case None => Left(Forbidden)
@@ -172,7 +75,7 @@ class GameController @Inject() (val controllerComponents: ControllerComponents)(
 
   object CarcassonneWebSocketFactory {
     def create(out: ActorRef, c: ControllerInterface, username: String): Props = {
-      Props(new CarcassonneWebSocketActor(out, c, username))
+      Props(new CarcassonneWebSocketActor(out, c, username, cardsIdsList)(af))
     }
   }
 
