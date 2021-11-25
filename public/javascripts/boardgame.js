@@ -1,4 +1,8 @@
-let websocket = new WebSocket("ws://" + location.hostname + ":9000/websocket");
+let websocket;
+$(document).ready(function () {
+    websocket = new WebSocket("ws://" + location.hostname + ":9000/websocket");
+    connectWebSocket(handle)
+})
 const connectWebSocket = handleData => {
     websocket.onopen = (event) => {
         console.log("Connected to Websocket");
@@ -26,9 +30,6 @@ const connectWebSocket = handleData => {
     };
 };
 
-$(document).ready(function () {
-    connectWebSocket(handle)
-})
 
 function handle(rawData) {
     const json = JSON.parse(rawData);
@@ -37,7 +38,14 @@ function handle(rawData) {
     if (r != null) {
         refresh(r);
     }
+    const g = json['gameOver'];
+    if (g != null) {
+        gameOver();
+    }
+}
 
+function gameOver(json) {
+    alert("Game Over!")
 }
 
 function refresh(json) {
@@ -51,6 +59,27 @@ const delay = millis => new Promise((resolve, reject) => {
     setTimeout(_ => resolve(), millis)
 });
 
+const ajaxRotate = function (dir) {
+    let r = {
+        "dir": dir
+    };
+    $.ajax({
+        url: '/rotate',
+        type: "POST",
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        data: JSON.stringify(r),
+        async: true,
+        success: function (data) {
+            $('div#freshCard').html(data);
+        },
+        error: function (e) {
+            console.log(e);
+        }
+    });
+    return false;
+};
 const rotateImage = function (calcRotation, dir) {
     let readIn = document.getElementById('cardP').getAttribute('rotation');
     let current_rotation = parseInt(readIn);
@@ -96,28 +125,6 @@ $(document).on('submit', 'form#leftButtonForm', (e) => {
     }, "Left")
 });
 
-var ajaxRotate = function (dir) {
-    let r = {
-        "dir": dir
-    };
-    $.ajax({
-        url: '/rotate',
-        type: "POST",
-        headers: {
-            'Content-Type': 'application/json'
-        },
-        data: JSON.stringify(r),
-        async: true,
-        success: function (data) {
-            $('div#freshCard').html(data);
-        },
-        error: function (e) {
-            console.log(e);
-        }
-    });
-    return false;
-};
-
 const ajaxPlaceCard = function (e) {
     e.preventDefault();
     e.stopImmediatePropagation();
@@ -131,29 +138,12 @@ const ajaxPlaceCard = function (e) {
         }
     };
     websocket.send(JSON.stringify(request));
-    // $.ajax({
-    //     url: '/placeCard',
-    //     type: "POST",
-    //     headers: {
-    //         'Content-Type': 'application/json'
-    //     },
-    //     data: JSON.stringify(request),
-    //     async: true,
-    //     success: function (data) {
-    //         $('form#' + id).html(data.tile);
-    //         $('div#freshCard').html(data.freshCard);
-    //         $('ul#stats').html(data.stats);
-    //     },
-    //     error: function (e) {
-    //         console.log(e);
-    //     }
-    // });
     return false;
 };
 
 $(document).on('submit', 'form.tile', ajaxPlaceCard);
 
-var ajaxManican = function (e) {
+const ajaxManican = function (e) {
     e.preventDefault();
     e.stopImmediatePropagation();
 
@@ -182,3 +172,72 @@ var ajaxManican = function (e) {
 };
 
 $(document).on('submit', 'form.manican', ajaxManican);
+
+Vue.createApp({
+    data() {
+        return {
+            username: "",
+            connection: null,
+            tiles: null,
+            freshCard: null,
+            players: [],
+        }
+    },
+    methods: {
+        placeCard(row, col) {
+            let request = {
+                "refresh": {
+                    "row": row,
+                    "col": col,
+                }
+            };
+            this.connection.send(JSON.stringify(request));
+        }
+    },
+    async mounted() {
+
+        console.log("Connecting to WebSocket...");
+        this.connection = new WebSocket("ws://" + location.hostname + ":9000/websocket");
+
+        this.connection.onopen = (event) => {
+            console.log("Connected to Websocket");
+            let msg = {
+                "connect": "success"
+            }
+            this.connection.send(JSON.stringify(msg));
+        };
+
+        this.connection.onclose = () => {
+            console.log("Connection with Websocket Closed!");
+        };
+
+        this.connection.onerror = (error) => {
+            console.log("Error in Websocket Occured: " + error);
+            // this.connection = new WebSocket("ws://" + location.hostname + ":9000/websocket");
+        };
+
+        this.connection.onmessage = (e) => {
+            console.log("received message " + e)
+
+            if (typeof e.data === "string") {
+                let json = JSON.parse(e.data)
+
+                for (let [key, value] of Object.entries(json)) {
+                    console.log(`Received ${key}: ${value}`)
+                    if (key === 'username') {
+                        this.username = value;
+                    }
+                    if (key === 'stats') {
+                        console.log(value)
+                        this.players = value.players;
+                    }
+                }
+            }
+        };
+    }
+})
+    .component('the-player-stats', {
+        template: '#the-player-stats-template',
+        props: {},
+    })
+    .mount('#app')

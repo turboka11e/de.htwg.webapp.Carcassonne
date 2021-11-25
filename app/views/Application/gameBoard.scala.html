@@ -2,63 +2,82 @@
 @main("Carcassonne") {
 
 
-<div class="my-5 container-sm">
-  <div class="row justify-content-center align-items-center">
+    <div class="my-5 container-sm">
+        <div class="row justify-content-center align-items-center" id="app">
+            {{ username }}
+            <div class="mb-2 col-md-auto">
+                <table cellspacing="0" cellpadding="0">
+                @for(col <- 0 until playfield.grid.size) {
+                    <tr>
+                    @for(row <- 0 until playfield.grid.size) {
+                        <td>
+                            <form id='row@{
+                                row
+                            }col@{
+                                col
+                            }' row="@row" col="@col" class="tile" style="height: 80px;
+                                width: 80px;">
+                            @_tile(playfield, manicanList, row, col)
+                            </form>
+                        </td>
+                    }
+                    </tr>
+                }
+                </table>
+            </div>
 
-    <!-- Gameboard -->
-    <div class="mb-2 col-md-auto">
-      <table cellspacing="0" cellpadding="0">
-        @for(col <- 0 until playfield.grid.size) { 
-          <tr>
-            @for(row <- 0 until playfield.grid.size) { 
-              <td>
-                <form id='row@{row}col@{col}' row="@row" col="@col" class="tile" style="height: 80px; width: 80px;">
-                  @_tile(playfield, manicanList, row, col)
-                </form>
-              </td>
-            }
-          </tr>
-          }
-      </table>
+
+                <!-- Spielerinfos -->
+            <div class=col-md-auto>
+
+                <div class="card shadow-lg" style="width: 18rem;">
+                    <div class="card-header">
+                        <h3 class="fst-italic fw-bold">Spielerinfos</h3>
+                    </div>
+                    <the-player-stats></the-player-stats>
+                    <div class="card-body">
+
+                        <div class="row align-items-center">
+                            <div class="col">
+                                <form id="leftButtonForm">
+                                    <button class="btn btn-lg btn-secondary rounded-circle"><i class='fas fa-undo'></i></button>
+                                </form>
+                            </div>
+
+                            <div id="freshCard" style="height: 85px;" class="col">
+                            @_freshCard(playfield, manicanList)
+                            </div>
+
+                            <div class="col">
+                                <form id="rightButtonForm">
+                                    <button class="btn btn-lg btn-secondary rounded-circle" type="submit"><i
+                                    class='fas fa-redo'></i></button>
+                                </form>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+
+        </div>
     </div>
 
-
-    <!-- Spielerinfos -->
-    <div class=col-md-auto>
-
-      <div class="card shadow-lg" style="width: 18rem;">
-        <div class="card-header">
-          <h3 class="fst-italic fw-bold">Spielerinfos</h3>
-        </div>
-        <ul id="stats" class="list-group list-group-flush">
-          @_stats(playfield)
+    <script type="text/x-template" id="the-player-stats-template">
+        <ul class="list-group list-group-flush">
+            <div v-for="player in $parent.players">
+                <li :style="{color: player.color}" class="list-group-item fw-bold">
+                    {{ player.player }}
+                    <span v-if="player.isOn" class="badge bg-success">Am Zug</span>
+                </li>
+            </div>
         </ul>
-        <div class="card-body">
+    </script>
 
-          <div class="row align-items-center">
-            <div class="col">
-              <form id="leftButtonForm">
-                <button class="btn btn-lg btn-secondary rounded-circle"><i class='fas fa-undo'></i></button>
-              </form>
-            </div>
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+    <script src='@routes.Assets.versioned("javascripts/boardgame.js")' type="module"></script>
+    <script>
 
-            <div id="freshCard" style="height: 85px;" class="col">
-              @_freshCard(playfield, manicanList)
-            </div>
+    </script>
 
-            <div class="col">
-              <form id="rightButtonForm">
-                <button class="btn btn-lg btn-secondary rounded-circle" type="submit"><i
-                    class='fas fa-redo'></i></button>
-              </form>
-            </div>
-          </div>
-
-        </div>
-      </div>
-    </div>
-
-  </div>
-</div>
-<script src='@routes.Assets.versioned("javascripts/boardgame.js")' type="text/javascript"></script>
 }

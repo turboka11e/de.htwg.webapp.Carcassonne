@@ -1,5 +1,13 @@
-let websocket = new WebSocket("ws://" + location.hostname + ":9000/websocket");
-const connectWebSocket = handleData => {
+// import Vue from "vue";
+
+let websocket;
+
+$(document).ready(function () {
+    websocket = new WebSocket("ws://" + location.hostname + ":9000/websocket");
+    connectWebSocket(handle)
+})
+
+function connectWebSocket(handleData) {
     websocket.onopen = (event) => {
         console.log("Connected to Websocket");
         let msg = {
@@ -23,14 +31,23 @@ const connectWebSocket = handleData => {
             handleData(e.data)
         }
     };
-};
+}
 
 function handle(rawData) {
     let json = JSON.parse(rawData);
-    console.log("got data from boardgame " + json.data)
-    location.href = '/gameBoard';
+    let newGame = json['newGame'];
+    if (newGame != null) {
+        console.log("got data from boardgame " + json.data)
+        location.href = '/gameBoard';
+    }
 }
 
-$(document).ready(function () {
-    connectWebSocket(handle)
-})
+const AttributeBinding = {
+    data() {
+        return {
+            message: 'You loaded this page on ' + new Date().toLocaleString()
+        }
+    }
+}
+
+Vue.createApp(AttributeBinding).mount('#bind-attribute')

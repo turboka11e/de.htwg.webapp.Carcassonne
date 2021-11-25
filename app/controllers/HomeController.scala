@@ -19,21 +19,16 @@ import de.htwg.se.Carcassonne.model.playfieldComponent.PlayfieldInterface
 class HomeController @Inject() (val controllerComponents: ControllerComponents)
     extends BaseController {
 
-  val injector: Injector = Guice.createInjector(new CarcassonneModule)
-  val controller: ControllerInterface =
-    injector.getInstance(classOf[ControllerInterface])
-  val tui = new TUI(controller)
-
   /** Create an Action to render an HTML page.
     *
     * The configuration in the `routes` file means that this method will be
     * called when the application receives a `GET` request with a path of `/`.
     */
-  def index() = Action { implicit request: Request[AnyContent] =>
+  def index(): Action[AnyContent] = Action { implicit request: Request[AnyContent] =>
     Ok(views.html.index())
   }
 
-  def rules() = Action {
+  def rules(): Action[AnyContent] = Action {
     Ok(views.html.rules())
   }
 

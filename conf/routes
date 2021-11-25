@@ -5,9 +5,10 @@
 
 # An example controller showing a sample home page
 GET     /                           controllers.HomeController.index()
+GET     /rules                      controllers.HomeController.rules()
 GET     /newGame                    controllers.GameController.newGame(size: Int, p1: String, p2: String, p3: String, p4:String)
 GET     /gameBoard                  controllers.GameController.gameBoard()
-GET     /rules                      controllers.HomeController.rules()
+GET     /playfield                  controllers.GameController.playfield()
 # Websocket
 GET      /websocket                 controllers.GameController.socket
 # Ajax
