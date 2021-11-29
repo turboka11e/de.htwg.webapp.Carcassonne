@@ -7,6 +7,8 @@
 GET     /                           controllers.HomeController.index()
 GET     /rules                      controllers.HomeController.rules()
 GET     /newGame                    controllers.GameController.newGame(size: Int, p1: String, p2: String, p3: String, p4:String)
+GET     /joinGame                   controllers.GameController.joinGame(username: String)
+GET     /hardNewGame                controllers.GameController.hardNewGame()
 GET     /gameBoard                  controllers.GameController.gameBoard()
 # Websocket
 GET      /websocket                 controllers.GameController.socket

@@ -8,16 +8,9 @@ import de.htwg.se.Carcassonne.controller.controllerComponent.controllerBaseImpl.
   GameOver,
   PlayfieldChanged
 }
-import play.api.libs.json.{
-  JsArray,
-  JsBoolean,
-  JsNumber,
-  JsObject,
-  JsString,
-  Json
-}
+import play.api.libs.json._
 import utils.Utils
-import utils.Utils.{last_col, last_row, manicanList}
+import utils.Utils.{chat, freshCardRotation}
 
 import scala.swing.Reactor
 
@@ -44,21 +37,29 @@ class CarcassonneWebSocketActor(
           sendStats()
           sendFreshCard()
           sendGrid()
+          sendChat()
+          sendActiveUser()
         }
+        case "homescreen" =>
+          if (controller.getGameState > 2) {
+            sendJoinGame()
+          }
         case "refresh" =>
           val row = value("row").as[JsNumber].value.toInt
           val col = value("col").as[JsNumber].value.toInt
-          last_row = row
-          last_col = col
-          controller.placeCard(row, col)
-          controller.placeAble()
-          sendFreshCard()
-          sendStats()
-          sendGrid()
+          if (controller.getPlayfield.legalPlace(row, col)) {
+            freshCardRotation = 0
+            controller.placeCard(row, col)
+            controller.placeAble()
+          }
         case "rotate" =>
           value.as[JsString].value match {
-            case "Right" => controller.rotateRight()
-            case "Left"  => controller.rotateLeft()
+            case "Right" =>
+              freshCardRotation += 90
+              controller.rotateRight()
+            case "Left" =>
+              freshCardRotation -= 90
+              controller.rotateLeft()
           }
         case "manican" =>
           value.as[JsString].value match {
@@ -67,8 +68,19 @@ class CarcassonneWebSocketActor(
             case "east"  => putManican('e')
             case "west"  => putManican('w')
           }
+        case "chat" =>
+          chat = value :: chat
+          controller.publish(new PlayfieldChanged)
       }
     }
+  }
+
+  def sendChat(): Unit = {
+    out ! Json
+      .obj(
+        "chat" -> JsArray(chat)
+      )
+      .toString()
   }
 
   def putManican(dir: Char): Unit = {
@@ -78,10 +90,12 @@ class CarcassonneWebSocketActor(
     controller.selectArea(index)
   }
 
-  def sendNewGameEvent(): Unit = {
+  def sendJoinGame(): Unit = {
+    val players = controller.getPlayfield.players.map(player => player.name)
+    players.foreach(name => println(name))
     out ! Json
       .obj(
-        "newGame" -> "New Game has started"
+        "joinGame" -> Json.toJson(players)
       )
       .toString()
   }
@@ -106,7 +120,7 @@ class CarcassonneWebSocketActor(
           "src" -> af.path(
             "images/media/" + cardsIdsList(freshCardId._1) + ".png"
           ),
-          "rotation" -> JsNumber(freshCardId._2 * 90),
+          "rotation" -> JsNumber(freshCardRotation),
           "manicans" -> Json.toJson(
             Utils.manicanList(controller) map (manican => {
               Json.obj(
@@ -139,6 +153,18 @@ class CarcassonneWebSocketActor(
                 )
             }
           )
+        )
+      )
+      .toString()
+  }
+
+  def sendActiveUser(): Unit = {
+    out ! Json
+      .obj(
+        "activeUser" -> JsBoolean(
+          controller.getPlayfield
+            .players(controller.getPlayfield.isOn)
+            .name equals username
         )
       )
       .toString()
@@ -197,9 +223,13 @@ class CarcassonneWebSocketActor(
   reactions += {
     case event: GameOver => sendGameOver()
     case event: PlayfieldChanged =>
+      sendActiveUser()
       sendStats()
       sendFreshCard()
       sendGrid()
-    case event: FirstCard => sendNewGameEvent()
+      sendChat()
+    case event: FirstCard =>
+      chat = Nil;
+      sendJoinGame()
   }
 }

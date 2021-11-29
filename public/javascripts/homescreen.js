@@ -1,53 +1,85 @@
 // import Vue from "vue";
-
-let websocket;
-
-$(document).ready(function () {
-    websocket = new WebSocket("ws://" + location.hostname + ":9000/websocket");
-    connectWebSocket(handle)
-})
-
-function connectWebSocket(handleData) {
-    websocket.onopen = (event) => {
-        console.log("Connected to Websocket");
-        let msg = {
-            "connect": "success"
-        }
-        websocket.send(JSON.stringify(msg));
-    };
-
-    websocket.onclose = () => {
-        console.log("Connection with Websocket Closed!");
-    };
-
-    websocket.onerror = (error) => {
-        console.log("Error in Websocket Occured: " + error);
-        websocket = new WebSocket("ws://" + location.hostname + ":9000/websocket");
-        connectWebSocket(handle)
-    };
-
-    websocket.onmessage = (e) => {
-        if (typeof e.data === "string") {
-            handleData(e.data)
-        }
-    };
-}
-
-function handle(rawData) {
-    let json = JSON.parse(rawData);
-    let newGame = json['newGame'];
-    if (newGame != null) {
-        console.log("got data from boardgame " + json.data)
-        location.href = '/gameBoard';
-    }
-}
-
 const AttributeBinding = {
     data() {
         return {
-            message: 'You loaded this page on ' + new Date().toLocaleString()
+            connection: new WebSocket("ws://" + location.hostname + ":9000/websocket"),
+            readyState: 3,
+            newGame: true,
+            gameModel: "#newGameModel",
+            players: [],
         }
+    },
+    methods: {
+        newWebsocket() {
+            console.log("Connecting to WebSocket...");
+
+            this.connection.onopen = (event) => {
+                this.readyState = this.connection.readyState
+                console.log("Connected to Websocket");
+                let msg = {
+                    "homescreen": "success"
+                }
+                this.connection.send(JSON.stringify(msg));
+            };
+            this.connection.onclose = () => {
+                this.readyState = this.connection.readyState
+                console.log("Connection with Websocket Closed!");
+            };
+
+            this.connection.onerror = (error) => {
+                this.readyState = this.connection.readyState
+                console.log("Error in Websocket Occured: " + error);
+                this.newWebsocket()
+            };
+
+            this.connection.onmessage = (e) => {
+                this.readyState = this.connection.readyState
+                console.log("received message " + e)
+
+                if (typeof e.data === "string") {
+                    let json = JSON.parse(e.data)
+
+                    for (let [key, value] of Object.entries(json)) {
+                        if (key === 'joinGame') {
+                            this.gameModel = "#joinGameModel"
+                            this.newGame = false;
+                            this.players = value;
+                            console.log(value);
+                        }
+                    }
+                }
+            };
+        },
+    },
+    computed: {
+        websocketState() {
+            switch (this.readyState) {
+                case 0:
+                    return "CONNECTING"
+                case 1:
+                    return "OPEN"
+                case 2:
+                    return "CLOSING"
+                case 3:
+                    return "CLOSED"
+            }
+        },
+        websocketStateColor() {
+            switch (this.readyState) {
+                case 0:
+                    return "bg-success"
+                case 1:
+                    return "bg-success"
+                case 2:
+                    return "bg-danger"
+                case 3:
+                    return "bg-danger"
+            }
+        },
+    },
+    created() {
+        this.newWebsocket()
     }
 }
 
-Vue.createApp(AttributeBinding).mount('#bind-attribute')
+Vue.createApp(AttributeBinding).mount('#app')

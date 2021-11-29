@@ -25,7 +25,7 @@ class HomeController @Inject() (val controllerComponents: ControllerComponents)
     * called when the application receives a `GET` request with a path of `/`.
     */
   def index(): Action[AnyContent] = Action { implicit request: Request[AnyContent] =>
-    Ok(views.html.index())
+    Ok(views.html.index()).withNewSession
   }
 
   def rules(): Action[AnyContent] = Action {

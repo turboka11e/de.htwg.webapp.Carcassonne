@@ -1,10 +1,21 @@
 package utils
 
+import com.google.inject.{Guice, Injector}
+import de.htwg.se.Carcassonne.CarcassonneModule
+import de.htwg.se.Carcassonne.aview.tui.TUI
 import de.htwg.se.Carcassonne.controller.controllerComponent.ControllerInterface
+import play.api.libs.json.{JsObject, JsValue}
 
 object Utils {
 
-  var (last_row, last_col) = (0, 0)
+  val injector: Injector = Guice.createInjector(new CarcassonneModule)
+  val controller: ControllerInterface =
+    injector.getInstance(classOf[ControllerInterface])
+  val tui = new TUI(controller)
+
+  var freshCardRotation = 0;
+
+  var chat: List[JsValue] = Nil
 
   def manicanList(controller: ControllerInterface): List[(String, String)] = {
     val freshCardAreas = controller.getPlayfield.freshCard.card.areas
