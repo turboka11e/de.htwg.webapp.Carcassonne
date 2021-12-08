@@ -4,7 +4,7 @@ import com.google.inject.{Guice, Injector}
 import de.htwg.se.Carcassonne.CarcassonneModule
 import de.htwg.se.Carcassonne.aview.tui.TUI
 import de.htwg.se.Carcassonne.controller.controllerComponent.ControllerInterface
-import play.api.libs.json.{JsObject, JsValue}
+import play.api.libs.json.{JsArray, JsBoolean, JsNumber, JsObject, JsValue, Json}
 
 object Utils {
 
@@ -14,8 +14,13 @@ object Utils {
   val tui = new TUI(controller)
 
   var freshCardRotation = 0;
-
   var chat: List[JsValue] = Nil
+
+  var lobby: JsObject = Json.obj(
+    "inhabitants" -> JsArray.empty,
+    "gamefieldsize" -> JsNumber(6),
+    "gameStarted" -> JsBoolean(false)
+  )
 
   def manicanList(controller: ControllerInterface): List[(String, String)] = {
     val freshCardAreas = controller.getPlayfield.freshCard.card.areas

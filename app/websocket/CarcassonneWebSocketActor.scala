@@ -3,14 +3,10 @@ package websocket
 import akka.actor.{Actor, ActorRef}
 import controllers.AssetsFinder
 import de.htwg.se.Carcassonne.controller.controllerComponent.ControllerInterface
-import de.htwg.se.Carcassonne.controller.controllerComponent.controllerBaseImpl.{
-  FirstCard,
-  GameOver,
-  PlayfieldChanged
-}
+import de.htwg.se.Carcassonne.controller.controllerComponent.controllerBaseImpl.{FirstCard, GameOver, PlayfieldChanged}
 import play.api.libs.json._
-import utils.Utils
-import utils.Utils.{chat, freshCardRotation}
+import utils.{LobbyEvent, Utils}
+import utils.Utils.{chat, freshCardRotation, lobby}
 
 import scala.swing.Reactor
 
@@ -31,7 +27,26 @@ class CarcassonneWebSocketActor(
     println(json)
     json.value map { case (s, value) =>
       s match {
-        case "connect" => {
+        case "newGame" => {
+          val players = value("players").as[JsArray].value
+          val gamesize = value("gamesize").as[JsNumber].value
+          controller.newGame()
+          controller.createGrid(gamesize.toInt)
+          for (player <- players) {
+            if (player.as[JsString].value.trim.nonEmpty) {
+              controller.addPlayer(player.as[JsString].value)
+            }
+          }
+          controller.firstCard()
+        }
+        case "loadLobby" => {
+          sendLobby()
+        }
+        case "updateLobby" => {
+          lobby = value.as[JsObject]
+          controller.publish(new LobbyEvent)
+        }
+        case "loadAll" => {
           println("Connection: " + value.as[JsString].value)
           sendSessionUserName()
           sendStats()
@@ -44,7 +59,7 @@ class CarcassonneWebSocketActor(
           if (controller.getGameState > 2) {
             sendJoinGame()
           }
-        case "refresh" =>
+        case "placeCard" =>
           val row = value("row").as[JsNumber].value.toInt
           val col = value("col").as[JsNumber].value.toInt
           if (controller.getPlayfield.legalPlace(row, col)) {
@@ -70,9 +85,17 @@ class CarcassonneWebSocketActor(
           }
         case "chat" =>
           chat = value :: chat
-          controller.publish(new PlayfieldChanged)
+          controller.publish(new LobbyEvent)
       }
     }
+  }
+
+  def sendLobby(): Unit = {
+    out ! Json
+      .obj(
+        "lobby" -> lobby
+      )
+      .toString()
   }
 
   def sendChat(): Unit = {
@@ -92,7 +115,7 @@ class CarcassonneWebSocketActor(
 
   def sendJoinGame(): Unit = {
     val players = controller.getPlayfield.players.map(player => player.name)
-    players.foreach(name => println(name))
+    players.foreach(name => println("sendjoingame " + name))
     out ! Json
       .obj(
         "joinGame" -> Json.toJson(players)
@@ -161,10 +184,10 @@ class CarcassonneWebSocketActor(
   def sendActiveUser(): Unit = {
     out ! Json
       .obj(
-        "activeUser" -> JsBoolean(
+        "activeUser" -> JsString(
           controller.getPlayfield
             .players(controller.getPlayfield.isOn)
-            .name equals username
+            .name
         )
       )
       .toString()
@@ -227,9 +250,11 @@ class CarcassonneWebSocketActor(
       sendStats()
       sendFreshCard()
       sendGrid()
-      sendChat()
     case event: FirstCard =>
       chat = Nil;
       sendJoinGame()
+    case event: LobbyEvent =>
+      sendLobby()
+      sendChat()
   }
 }
