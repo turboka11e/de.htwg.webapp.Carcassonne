@@ -1,11 +1,143 @@
-@()
-
 @main("Welcome to Play") {
-  <center>
-    <h1>Let's play Carcassonne!</h1>
-    <form action="/newGame">
-      <input type="submit" value="New Game">
-    </form>
-    <!-- <button type="button" onclick="location.href='http://127.0.0.1:9000/newGame'">New Game</button> -->
-  </center>
+
+    <div id="app">
+        <nav class="navbar navbar-expand-sm navbar-light bg-light bg-gradient border-bottom justify-content-end shadow-lg">
+            <div class="container-sm">
+                <a class="mx-2 navbar-brand flex-grow-1" href="\">
+                    <img src="@routes.Assets.versioned("images/media/Logo-Carcassonne_IMGP.png")" alt="" width="40" height="40">
+                    <img src="@routes.Assets.versioned("images/media/CarcassonneText_IMGP.png")" alt="" width="168" height="30">
+                </a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="collapse navbar-collapse flex-grow-0" id="navbarSupportedContent">
+                    <ul class="navbar-nav text-right">
+                        <li class="nav-item">
+                            <a class="mx-2 nav-link" href="/rules">Regeln</a>
+                        </li>
+                    </ul>
+                </div>
+                <div class="dropdown">
+                    <button :class="websocketStateColor" class="btn dropdown-toggle" type="button" id="dropdownMenuButton1" data-bs-toggle="dropdown" aria-expanded="false">
+                        {{ websocketState }}
+                    </button>
+                    <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton1">
+                        <li><a v-on:click="newWebsocket" class="dropdown-item" href="#">Refresh</a></li>
+                    </ul>
+                </div>
+            </div>
+        </nav>
+
+        <div class="card-group center-stage">
+            <div class="card text-center" style="width: 18rem;">
+                <div class="card-body d-flex flex-column">
+                    <h2 class="card-title fw-bold">{{newGame ? 'Neues Spiel' : 'Spiel erstellt'}}</h2>
+                    <p class="card-text">Ein Spiel mit bis zu vier Spielern.</p>
+                        <!-- Button trigger modal -->
+                    <button type="button" class="mt-auto btn btn-outline-success btn-lg fw-bold" data-bs-toggle="modal"
+                    :data-bs-target="gameModel">
+                        {{newGame ? 'Neues Spiel' : 'Beitreten'}}
+                    </button>
+
+                </div>
+            </div>
+            <div class="card text-center" style="width: 18rem;">
+                <div class="card-body d-flex flex-column">
+                    <h2 class="card-title fw-bold">Regeln</h2>
+                    <p class="card-text">Lerne die Grundregeln kennen.</p>
+                    <a type="button" class="mt-auto btn btn-outline-info btn-lg fw-bold" href="/rules">Zu den Regeln</a>
+                </div>
+            </div>
+        </div>
+
+            <!-- Modal -->
+        <div class="modal fade" id="newGameModel" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title fw-bold" id="exampleModalLabel">Neues Spiel erstellen</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+
+                    <form action="/newGame">
+                        <div class="modal-body">
+
+                            <div class="row d-flex justify-content-center">
+
+                                <div class="mb-3 row">
+                                    <div class="col">
+                                        <p class="fw-bold">Spielgrösse</p>
+                                    </div>
+                                    <select class="form-select col" id="feldgroesse" name="size">
+                                        <option value="3">Klein</option>
+                                        <option selected value="6">Mittel</option>
+                                        <option value="9">Groß</option>
+                                    </select>
+                                </div>
+
+                                <div class="row row-cols-2">
+                                    <label for="validationCustom01" class="form-label fw-bold">Spieler 1</label>
+                                    <input type="text" class="mb-3 form-control" id="validationCustom01" placeholder="Name" name="p1" id="p1"
+                                    autofocus="autofocus" onfocus="this.select()" required>
+
+                                    <label for="validationCustom01" class="form-label fw-bold">Spieler 2</label>
+                                    <input type="text" class="mb-3 form-control" id="validationCustom01" placeholder="Name" name="p2" id="p2"
+                                    autofocus="autofocus">
+
+                                    <label for="validationCustom01" class="form-label fw-bold">Spieler 3</label>
+                                    <input type="text" class="mb-3 form-control" id="validationCustom01" placeholder="Name" name="p3" id="p3"
+                                    autofocus="autofocus">
+
+                                    <label for="validationCustom01" class="form-label fw-bold">Spieler 4</label>
+                                    <input type="text" class="mb-3 form-control" id="validationCustom01" placeholder="Name" name="p4" id="p4"
+                                    autofocus="autofocus">
+                                </div>
+                            </div>
+
+
+                        </div>
+
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-outline-danger" data-bs-dismiss="modal">Abbrechen</button>
+                            <button type="submit" class="btn btn-success">Spiel Starten</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <div class="modal fade" id="joinGameModel" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title fw-bold" id="exampleModalLabel">Neues Spiel beitreten</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+
+                    <form action="/joinGame">
+                        <div class="modal-body">
+
+                            <div class="row d-flex justify-content-center">
+
+                                <div v-for="player in players" class="row row-cols-2">
+                                    <div>
+                                        <input type="radio" :id="player" name="username" :value="player" checked>
+                                        <label :for="player">{{player}}</label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-outline-danger" data-bs-dismiss="modal">Abbrechen</button>
+                            <button type="submit" class="btn btn-success">Spiel Starten</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <script src="@routes.Assets.versioned("javascripts/homescreen.js")" type="text/javascript"></script>
 }

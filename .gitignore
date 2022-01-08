@@ -1,11 +1,12 @@
 logs
 target
-/.metals
+.metals
 /.vscode
-/.bsp
+.bsp
 /.idea
 /.idea_modules
 /.classpath
 /.project
 /.settings
 /RUNNING_PID
+/node_modules/

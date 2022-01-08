@@ -1,59 +1,183 @@
-@(playfield: de.htwg.se.Carcassonne.model.playfieldComponent.PlayfieldInterface)
-
 @main("Carcassonne") {
 
-  <center>
-    <h1>Carcassonne</h1>
-  </center>
-    <div style="width: 50%; margin: 0px auto;">
-      <div class="row">
-        <div class="column" style="float: left;">
-          <table>
-            @for(col <- 0 until playfield.getGrid.getSize) {
-            <tr>
-              @for(row <- 0 until playfield.getGrid.getSize) {
-                <td>
-                  <form action="/placeCard">
-                    <input type="hidden" name="row" id="row" value="@row">
-                    <input type="hidden" name="col" id="col" value="@col">
-                    @if(playfield.getGrid.card(row, col).getID._1 == -1) {
-                      <input type="image" src="@routes.Assets.versioned("images/media/Empty.png")">
-                    } else {
-                      <input type="image" src="@{routes.Assets.versioned("images/media/" + List("D", "E", "G", "H", "I", "J", "K", "L", "N", "O", "R", "T", "U", "V", "C", "W")(playfield.getGrid.card(row, col).getID._1))}.png" style="transform:rotate(@{List(0,90,180,270)(playfield.getGrid.card(row, col).getID._2)}deg);">
-                    }
-                  </form>
-                </td>
-              }
-            </tr>
-            }
-          </table>
+    <div id="app">
+        <div v-if="this.gameOver" class="modal fade show" tabindex="-1" style="display: block" aria-model="true" role="dialog">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Game Over!</h5>
+                    </div>
+                    <div class="modal-body">
+                        <p>Spiel ist vorbei.</p>
+                    </div>
+                    <div class="modal-footer">
+                        <a type="button" class="btn btn-success" href="/hardNewGame">Beenden</a>
+                    </div>
+                </div>
+            </div>
         </div>
-        <div class=column style="float: right;">
-          <div class="column" >
-            <h2>Spielerinfos</h2>
-            <ul>
-              @for(player <- playfield.getPlayers) {
-                <li>@player</li>
-              }
-            </ul>
-          </div>
-          <div>
-            <img src="@{routes.Assets.versioned("images/media/" + List("D", "E", "G", "H", "I", "J", "K", "L", "N", "O", "R", "T", "U", "V", "C", "W")(playfield.getCurrentFreshCard.getCard.getID._1))}.png" style="transform:rotate(@{List(0,90,180,270)(playfield.getCurrentFreshCard.getCard.getID._2)}deg);">
-          </div>
-          <div>
-            <form action="/rotate">
-              <input type="submit" name="dir" id="dir" value="Left">
-              <input type="submit" name="dir" id="dir" value="Right">
-            </form>
-          </div>
-          <div>
-            <br>
-            <form action="/newGame">
-              <input type="submit" value="New Game">
-            </form>
-          </div>
+
+        <nav class="navbar navbar-expand-sm navbar-light bg-light bg-gradient border-bottom justify-content-end shadow-lg">
+            <div class="container-sm">
+                <a class="mx-2 navbar-brand flex-grow-1" href="\">
+                    <img src="@routes.Assets.versioned("images/media/Logo-Carcassonne_IMGP.png")" alt="" width="40" height="40">
+                    <img src="@routes.Assets.versioned("images/media/CarcassonneText_IMGP.png")" alt="" width="168" height="30">
+                </a>
+
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="collapse navbar-collapse flex-grow-0" id="navbarSupportedContent">
+                    <ul class="navbar-nav text-right">
+                        <li class="nav-item">
+                            <a class="mx-2 nav-link disabled" aria-disabled="true">{{ username }}</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="mx-2 nav-link" href="/rules">Regeln</a>
+                        </li>
+                    </ul>
+                </div>
+                <a class="mx-2 btn btn-outline-success ml-auto mr-1" href="/hardNewGame">Neues Spiel</a>
+                <div class="dropdown">
+                    <button :class="websocketStateColor" class="btn dropdown-toggle" type="button" id="dropdownMenuButton1" data-bs-toggle="dropdown" aria-expanded="false">
+                        {{ websocketState }}
+                    </button>
+                    <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton1">
+                        <li><a v-on:click="newWebsocket" class="dropdown-item" href="#">Refresh</a></li>
+                    </ul>
+                </div>
+            </div>
+        </nav>
+
+        <div class="my-5 container-sm">
+            <div class="row justify-content-center align-items-center">
+                <div class="mb-2 col-md-auto">
+                    <template v-if="grid != null">
+                        <table>
+                            <tbody>
+                                <template v-for="rows in grid.rows">
+                                    <tr>
+                                        <template v-for="col in rows.cols">
+                                            <td>
+                                                <div :key="col.col + col.row" style="height: 80px;
+                                                    width: 80px;">
+                                                    <input v-if="col.empty" type="image" v-on:click="placeCard(col.row, col.col)" :disabled="!activeUser" :src="col.src">
+                                                    <div v-else class="cardPlaceholder">
+                                                        <img style="pointer-events: none;" class="cardImage" :src="col.src" :style="{ transform: 'rotate(' + col.rotation + 'deg)'}">
+                                                        <template v-for="manican in col.manicans">
+                                                            <img style="pointer-events: none" :class="manican.dir" :src="manican.src">
+                                                        </template>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                        </template>
+                                    </tr>
+                                </template>
+                            </tbody>
+                        </table>
+                    </template>
+                </div>
+
+                    <!-- Spielerinfos -->
+                <div class=col-md-auto>
+
+                    <div class="card shadow-lg" style="width: 18rem;">
+                        <div class="card-header">
+                            <h3 class="fst-italic fw-bold">Spielerinfos</h3>
+                        </div>
+                        <the-player-stats></the-player-stats>
+                        <div class="card-body">
+
+                            <div class="row align-items-center">
+                                <div class="col">
+                                    <button v-on:Click="rotateLeft()" class="btn btn-lg btn-outline-dark rounded-circle" :disabled="!activeUser"><i class='fas fa-undo'></i></button>
+                                </div>
+
+                                <div style="height: 85px;" class="col">
+
+                                    <div v-if="freshCard != null" class="cardPlaceholder">
+                                        <img class="cardImage; rotate"
+                                        :src="freshCard.src" :key="freshCard.src" :style="rotationFreshCard"
+                                        style='pointer-events: none;
+                                            border-radius: 5px;' />
+                                        <transition-group name="fade">
+                                            <div v-if="freshCard.manicansShow">
+                                                <div v-for="manican in freshCard.manicans">
+                                                    <input type="image" :disabled="manican.disabled || !activeUser" v-on:click="selectManican(manican.dir)" :key="manican.dir" :class="manican.dir" :src='manican.path'>
+                                                </div>
+                                            </div>
+                                        </transition-group>
+                                    </div>
+
+                                </div>
+
+                                <div class="col">
+                                    <button v-on:Click="rotateRight()" class="btn btn-lg btn-outline-dark rounded-circle" :disabled="!activeUser"><i
+                                    class='fas fa-redo'></i></button>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+
+
+            </div>
+
+            <div class="row justify-content-center align-items-center">
+                <div class="col-6">
+                    <div class="card shadow-lg">
+                        <div class="card-header">
+                            <h3 class="fst-italic fw-bold">Chat</h3>
+                        </div>
+
+                        <div class="card-body">
+                            <div class="row justify-content-center align-items-center">
+                                <div class="overflow-auto" style="height: 6rem;">
+                                    <ul class="list-group list-group-flush">
+                                        <li v-for="item in chat" :key="msg" style="list-style-type: none;" class="list-group-item">
+                                            <span class="badge bg-info">{{ item.username }} {{ item.timestamp }}</span>
+                                            {{ item.msg }}
+                                        </li>
+                                    </ul>
+                                </div>
+                                <hr>
+                                <div class="row">
+                                    <div class="col-10">
+                                        <div class="input-group">
+                                            <input class="form-control" type="text" v-on:keyup.enter="sendMessage" v-model="this.message">
+                                        </div>
+                                    </div>
+                                    <div class="col-2 d-flex justify-content-end">
+                                        <button class="btn btn-sm btn-primary" v-on:click="sendMessage">Send</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
         </div>
-      </div>
+
     </div>
+
+    <script type="text/x-template" id="the-player-stats-template">
+    <ul class="list-group list-group-flush">
+    <div v-for="player in $parent.players">
+    <li
+    :style="{color: player.color}" class="list-group-item fw-bold">
+    {{player.player}}
+    <span v-if="player.isOn" class="badge bg-success">Am Zug</span>
+    </li>
+    </div>
+    </ul>
+    </script>
+
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+    <script src='@routes.Assets.versioned("javascripts/boardgame.js")' type="module"></script>
+    <script>
+
+    </script>
 
 }
