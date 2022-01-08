@@ -2,7 +2,7 @@
 const AttributeBinding = {
     data() {
         return {
-            connection: new WebSocket("ws://" + location.hostname + ":9000/websocket"),
+            connection: new WebSocket("wss://" + location.hostname + "/websocket"),
             readyState: 3,
             newGame: true,
             gameModel: "#newGameModel",

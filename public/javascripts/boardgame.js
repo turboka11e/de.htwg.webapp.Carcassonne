@@ -2,7 +2,7 @@ Vue.createApp({
     data() {
         return {
             username: "",
-            connection: new WebSocket("ws://" + location.hostname + ":9000/websocket"),
+            connection: new WebSocket("wss://" + location.hostname + "/websocket"),
             grid: null,
             freshCard: null,
             players: [],
@@ -17,7 +17,7 @@ Vue.createApp({
         newWebsocket() {
             console.log("Connecting to WebSocket...");
             if (this.connection.readyState === WebSocket.CLOSED) {
-                this.connection = new WebSocket("ws://" + location.hostname + ":9000/websocket");
+                this.connection = new WebSocket("wss://" + location.hostname + "/websocket");
             }
             this.connection.onopen = (event) => {
                 this.readyState = this.connection.readyState
