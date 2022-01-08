@@ -11,7 +11,7 @@ const AttributeBinding = {
     },
     methods: {
         newWebsocket() {
-            console.log("Connecting to WebSocket...");
+            console.log("Connecting to WebSocket... ");
 
             this.connection.onopen = (event) => {
                 this.readyState = this.connection.readyState
