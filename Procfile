@@ -1,1 +1,1 @@
-web: target/universal/stage/bin/play-carcassonne
+web: target/universal/stage/bin/play-carcassonne -Dapplication.secret=jsdfiouw3ljf8348dfslkj
