@@ -4,6 +4,8 @@ organization := "de.htwg.webapp"
 version := "1.0-SNAPSHOT"
 scalaVersion := "2.12.2"
 
+herokuAppName in Compile := "de-htwg-wa-carcassonne-server"
+
 lazy val branch = "SA-02-Monads"
 lazy val carcassonne = RootProject(uri("git://github.com/turboka11e/de.htwg.se.Carcassonne.git#%s".format(branch)))
 

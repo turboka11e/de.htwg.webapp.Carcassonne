@@ -4,5 +4,7 @@
 
 - sbt compile stage
 - heroku local web
-- git push heroku master
-- git push heroku WA-09-Vue-Cli-Server:master
+- Deployment two choices
+    - git push heroku WA-09-Vue-Cli-Server:master
+    - sbt stage deployHeroku
+- heroku open -a de-htwg-wa-carcassonne-server
