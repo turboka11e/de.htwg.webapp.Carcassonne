@@ -6,6 +6,10 @@ scalaVersion := "2.12.2"
 
 herokuAppName in Compile := "de-htwg-wa-carcassonne-server"
 
+herokuProcessTypes in Compile := Map(
+  "web" -> "target/universal/stage/bin/play-carcassonne -Dhttp.port=$PORT",
+)
+
 lazy val branch = "SA-02-Monads"
 lazy val carcassonne = RootProject(uri("git://github.com/turboka11e/de.htwg.se.Carcassonne.git#%s".format(branch)))
 
