@@ -1,1 +1,1 @@
-web: target/universal/stage/bin/play-carcassonne -Dapplication.secret='0YKm_t_zeeD>8ev=xOdOpglofgBc@:gq]^:F2h]<3etbzXb5Ys7P<wA8[GpHDfQb' -Dhttp.port=$PORT
+web: target/universal/stage/bin/play-carcassonne -Dapplication.secret=0YKm_t_zeeD>8ev=xOdOpglofgBc@:gq]^:F2h]<3etbzXb5Ys7P<wA8[GpHDfQb -Dhttp.port=$PORT
